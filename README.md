@@ -17,6 +17,12 @@ cd front-end/
 npm install
 ```
 
+Add a `.env` file:
+
+```bash
+touch .env
+```
+
 Populate the front-end `.env` as follows:
 
 ```bash
@@ -41,6 +47,12 @@ From root, install the back-end dependencies:
 ```bash
 cd back-end/
 npm install
+```
+
+Add a `.env` file:
+
+```bash
+touch .env
 ```
 
 Populate the front-end `.env` as follows:
