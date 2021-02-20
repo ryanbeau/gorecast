@@ -34,6 +34,10 @@ if (!clientOriginUrl) {
 const clientOrigins = ["http://localhost:4040"];
 
 module.exports = {
+  dbPort: process.env.DB_PORT || 3306,
+  dbHost: process.env.DB_HOST || 'localhost',
+  dbUser: process.env.DB_USER || 'root',
+  dbPassword: process.env.DB_PASSWORD || 'root',
   audience,
   domain,
   serverPort,

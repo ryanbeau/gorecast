@@ -1,9 +1,12 @@
 // External Modules
 
+var { graphqlHTTP } = require("express-graphql");
 const express = require("express");
 const cors = require("cors");
 const helmet = require("helmet");
 const { clientOrigins, serverPort } = require("./config/env.dev");
+const resolvers = require("./data/resolvers");
+const schema = require("./data/schema");
 
 const { messagesRouter } = require("./messages/messages.router");
 
@@ -19,6 +22,14 @@ app.use(cors({ origin: clientOrigins }));
 app.use(express.json());
 
 app.use("/api", apiRouter);
+app.use(
+  "/api/graphql",
+  graphqlHTTP({
+    schema: schema,
+    rootValue: resolvers,
+    graphiql: true,
+  })
+);
 
 apiRouter.use("/messages", messagesRouter);
 
