@@ -72,3 +72,102 @@ With the `.env` configuration values set, run the API server by issuing the foll
 ```bash
 npm start
 ```
+
+# GraphQL
+
+### POST: Add Member
+```graphql
+mutation addMember($email: String!, $memberName: String) {
+    addMember(email: $email, memberName: $memberName) {
+        memberID
+        email
+        memberName
+    }
+}
+```
+```json
+{
+    "email": "ryan@bob.net",
+    "memberName": "ryan"
+}
+```
+
+### POST: Add Category
+```graphql
+mutation addCategory($memberID: Int!, $categoryName: String!) {
+    addCategory(memberID: $memberID, categoryName: $categoryName) {
+        categoryID
+        memberID
+        categoryName
+    }
+}
+```
+```json
+{
+    "memberID": 1,
+    "categoryName": "Salary"
+}
+```
+
+### POST: Add Account
+```graphql
+mutation addAccount($memberID: Int!, $startBalance: Float) {
+    addAccount(memberID: $memberID, startBalance: $startBalance) {
+        accountID
+        memberID
+        startBalance
+    }
+}
+```
+```json
+{
+    "memberID": 1,
+    "categoryName": "Salary",
+    "startBalance": 0.00
+}
+```
+
+### POST: Add Account Share
+```graphql
+mutation addAccountShare($accountID: Int!, $memberID: Int!) {
+    addAccountShare(accountID: $accountID, memberID: $memberID) {
+        accountShareID
+        accountID
+        memberID
+    }
+}
+```
+```json
+{
+    "accountID": 1,
+    "memberID": 1
+}
+```
+
+### POST: Add Ledger
+```graphql
+mutation addLedger($accountID: Int!, $memberID: Int!, $categoryID: Int!, $amount: Float!, $description: String, $ledgerFrom: String!, $ledgerTo: String!) {
+    addLedger(accountID: $accountID, memberID: $memberID, categoryID: $categoryID, amount: $amount, description: $description, ledgerFrom: $ledgerFrom, ledgerTo: $ledgerTo) {
+        ledgerID
+        accountID
+        memberID
+        categoryID
+        amount
+        description
+        ledgerFrom
+        ledgerTo
+    }
+}
+```
+```json
+{
+    "accountID": 1,
+    "memberID": 1,
+    "memberID": 1,
+    "categoryID": 1,
+    "amount": 123.45,
+    "description": "McDonald's",
+    "ledgerFrom": "2012-04-23T18:25:43.511Z",
+    "ledgerTo": "2012-04-23T18:25:43.511Z"
+}
+```
