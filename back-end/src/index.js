@@ -5,8 +5,7 @@ const express = require("express");
 const cors = require("cors");
 const helmet = require("helmet");
 const { clientOrigins, serverPort } = require("./config/env.dev");
-const resolvers = require("./data/resolvers");
-const schema = require("./data/schema");
+const schema = require("./data/resolvers");
 
 const { messagesRouter } = require("./messages/messages.router");
 
@@ -25,8 +24,7 @@ app.use("/api", apiRouter);
 app.use(
   "/api/graphql",
   graphqlHTTP({
-    schema: schema,
-    rootValue: resolvers,
+    schema,
     graphiql: true,
   })
 );
