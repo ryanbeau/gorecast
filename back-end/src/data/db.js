@@ -27,8 +27,7 @@ const Member = sequelize.define('member', {
     type: Sequelize.STRING,
     allowNull: true,
   },
-},
-{ sequelize });
+});
 
 // category
 const Category = sequelize.define('category', {
@@ -45,9 +44,9 @@ const Category = sequelize.define('category', {
     type: Sequelize.STRING,
     allowNull: false,
   },
-},
-{ sequelize });
+});
 
+Member.hasMany(Category, {foreignKey: 'memberID', as: 'categories'});
 Category.belongsTo(Member, {foreignKey: 'memberID'});
 
 // account
@@ -65,9 +64,9 @@ const Account = sequelize.define('account', {
     type: Sequelize.DECIMAL(12, 2),
     allowNull: false,
   },
-},
-{ sequelize });
+});
 
+Member.hasMany(Account, {foreignKey: 'memberID', as: 'accounts'});
 Account.belongsTo(Member, {foreignKey: 'memberID'});
 
 // account share
@@ -85,10 +84,12 @@ const AccountShare = sequelize.define('accountShare', {
     type: Sequelize.INTEGER,
     allowNull: false,
   },
-},
-{ sequelize });
+});
 
+Account.hasMany(AccountShare, {foreignKey: 'accountID', as: 'accountShares'});
 AccountShare.belongsTo(Account, {foreignKey: 'accountID'});
+
+Member.hasMany(AccountShare, {foreignKey: 'memberID', as: 'accountShares'});
 AccountShare.belongsTo(Member, {foreignKey: 'memberID'});
 
 // ledger
@@ -114,6 +115,11 @@ const Ledger = sequelize.define('ledger', {
     type: Sequelize.DECIMAL(9, 2),
     allowNull: false,
   },
+  isBudget: {
+    type: Sequelize.BOOLEAN,
+    allowNull: false,
+    defaultValue: false,
+  },
   description: {
     type: Sequelize.STRING,
     allowNull: true,
@@ -126,11 +132,15 @@ const Ledger = sequelize.define('ledger', {
     type: Sequelize.DATE,
     allowNull: false,
   },
-},
-{ sequelize });
+});
 
+Account.hasMany(Ledger, {foreignKey: 'accountID', as: 'ledgers'});
 Ledger.belongsTo(Account, {foreignKey: 'accountID'});
+
+Member.hasMany(Ledger, {foreignKey: 'accountID', as: 'ledgers'});
 Ledger.belongsTo(Member, {foreignKey: 'memberID'});
+
+Category.hasMany(Ledger, {foreignKey: 'accountID', as: 'ledgers'});
 Ledger.belongsTo(Category, {foreignKey: 'categoryID'});
 
 sequelize.sync();

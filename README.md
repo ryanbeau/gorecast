@@ -73,7 +73,54 @@ With the `.env` configuration values set, run the API server by issuing the foll
 npm start
 ```
 
+# MySQL Database
+
+The default database `gorecase` uses the following default connection values:
+```bash
+DB_PORT=3306
+DB_HOST=localhost
+DB_USER=root
+DB_PASSWORD=root
+```
+If these default values require change for local deployment, add them to the `.env` file with required values.
+
 # GraphQL
+
+### GET: Member By Email
+```graphql
+query memberByEmail($email: String!) {
+    memberByEmail(email: $email) {
+        memberID
+        email
+        memberName
+        accounts {
+            accountID
+            startBalance
+        }
+        accountShares {
+            accountID
+        }
+        categories {
+            categoryID
+            categoryName
+        }
+        ledgers {
+            ledgerID
+            accountID
+            categoryID
+            amount
+            description
+            ledgerFrom
+            ledgerTo
+        }
+    }
+}
+```
+```json
+{
+    "email": "email@example.net",
+}
+```
 
 ### POST: Add Member
 ```graphql
@@ -87,8 +134,8 @@ mutation addMember($email: String!, $memberName: String) {
 ```
 ```json
 {
-    "email": "ryan@bob.net",
-    "memberName": "ryan"
+    "email": "email@example.net",
+    "memberName": "name"
 }
 ```
 
