@@ -1,12 +1,11 @@
 const Sequelize = require('sequelize');
 const { dbPort, dbHost, dbUser, dbPassword } = require("../config/env.dev");
 
-var sequelize = new Sequelize(
-  'gorecast', dbUser, dbPassword,
+const sequelize = new Sequelize('gorecast', dbUser, dbPassword,
   {
-    host    : dbHost,
-    port    : dbPort,
-    dialect : 'mysql',
+    host: dbHost,
+    port: dbPort,
+    dialect: 'mysql',
     dialectModule: require('mysql2'),
   }
 );
@@ -27,7 +26,7 @@ const Member = sequelize.define('member', {
     type: Sequelize.STRING,
     allowNull: true,
   },
-});
+}, { freezeTableName: true });
 
 // category
 const Category = sequelize.define('category', {
@@ -44,10 +43,10 @@ const Category = sequelize.define('category', {
     type: Sequelize.STRING,
     allowNull: false,
   },
-});
+}, { freezeTableName: true });
 
-Member.hasMany(Category, {foreignKey: 'memberID', as: 'categories'});
-Category.belongsTo(Member, {foreignKey: 'memberID'});
+Member.hasMany(Category, { foreignKey: 'memberID', as: 'categories' });
+Category.belongsTo(Member, { foreignKey: 'memberID' });
 
 // account
 const Account = sequelize.define('account', {
@@ -64,10 +63,10 @@ const Account = sequelize.define('account', {
     type: Sequelize.DECIMAL(12, 2),
     allowNull: false,
   },
-});
+}, { freezeTableName: true });
 
-Member.hasMany(Account, {foreignKey: 'memberID', as: 'accounts'});
-Account.belongsTo(Member, {foreignKey: 'memberID'});
+Member.hasMany(Account, { foreignKey: 'memberID', as: 'accounts' });
+Account.belongsTo(Member, { foreignKey: 'memberID' });
 
 // account share
 const AccountShare = sequelize.define('accountShare', {
@@ -80,17 +79,21 @@ const AccountShare = sequelize.define('accountShare', {
     type: Sequelize.INTEGER,
     allowNull: false,
   },
+  accountName: {
+    type: Sequelize.STRING,
+    allowNull: false,
+  },
   memberID: {
     type: Sequelize.INTEGER,
     allowNull: false,
   },
-});
+}, { freezeTableName: true });
 
-Account.hasMany(AccountShare, {foreignKey: 'accountID', as: 'accountShares'});
-AccountShare.belongsTo(Account, {foreignKey: 'accountID'});
+Account.hasMany(AccountShare, { foreignKey: 'accountID', as: 'accountShares' });
+AccountShare.belongsTo(Account, { foreignKey: 'accountID' });
 
-Member.hasMany(AccountShare, {foreignKey: 'memberID', as: 'accountShares'});
-AccountShare.belongsTo(Member, {foreignKey: 'memberID'});
+Member.hasMany(AccountShare, { foreignKey: 'memberID', as: 'accountShares' });
+AccountShare.belongsTo(Member, { foreignKey: 'memberID' });
 
 // ledger
 const Ledger = sequelize.define('ledger', {
@@ -132,18 +135,18 @@ const Ledger = sequelize.define('ledger', {
     type: Sequelize.DATE,
     allowNull: false,
   },
-});
+}, { freezeTableName: true });
 
-Account.hasMany(Ledger, {foreignKey: 'accountID', as: 'ledgers'});
-Ledger.belongsTo(Account, {foreignKey: 'accountID'});
+Account.hasMany(Ledger, { foreignKey: 'accountID', as: 'ledgers' });
+Ledger.belongsTo(Account, { foreignKey: 'accountID' });
 
-Member.hasMany(Ledger, {foreignKey: 'accountID', as: 'ledgers'});
-Ledger.belongsTo(Member, {foreignKey: 'memberID'});
+Member.hasMany(Ledger, { foreignKey: 'accountID', as: 'ledgers' });
+Ledger.belongsTo(Member, { foreignKey: 'memberID' });
 
-Category.hasMany(Ledger, {foreignKey: 'accountID', as: 'ledgers'});
-Ledger.belongsTo(Category, {foreignKey: 'categoryID'});
+Category.hasMany(Ledger, { foreignKey: 'accountID', as: 'ledgers' });
+Ledger.belongsTo(Category, { foreignKey: 'categoryID' });
 
-sequelize.sync();
+sequelize.sync({ alter: true }); // alter: modify columns if missing
 
 module.exports = {
   Member,

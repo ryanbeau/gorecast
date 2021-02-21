@@ -19,6 +19,7 @@ type Category {
 type Account {
     accountID:     Int!
     memberID:      Int!
+    accountName:   String!
     startBalance:  Float!
     member:        Member!
     accountShares: [AccountShare!]
@@ -39,7 +40,7 @@ type Ledger {
     memberID:    Int!
     categoryID:  Int!
     amount:      Float!
-    isBudget:    Boolean
+    isBudget:    Boolean!
     description: String
     ledgerFrom:  String!
     ledgerTo:    String!
