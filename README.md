@@ -86,15 +86,16 @@ If these default values require change for local deployment, add them to the `.e
 
 # GraphQL
 
-### GET: Member By Email
+### GET: Me
 ```graphql
-query memberByEmail($email: String!) {
-    memberByEmail(email: $email) {
+{
+    me {
         memberID
         email
         memberName
         accounts {
             accountID
+            accountName
             startBalance
         }
         accountShares {
@@ -114,11 +115,6 @@ query memberByEmail($email: String!) {
             ledgerTo
         }
     }
-}
-```
-```json
-{
-    "email": "email@example.net",
 }
 ```
 
@@ -158,10 +154,11 @@ mutation addCategory($memberID: Int!, $categoryName: String!) {
 
 ### POST: Add Account
 ```graphql
-mutation addAccount($memberID: Int!, $startBalance: Float) {
-    addAccount(memberID: $memberID, startBalance: $startBalance) {
+mutation addAccount($memberID: Int!, $accountName: String!, $startBalance: Float) {
+    addAccount(memberID: $memberID, accountName: $accountName, startBalance: $startBalance) {
         accountID
         memberID
+        accountName
         startBalance
     }
 }

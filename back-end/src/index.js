@@ -5,7 +5,8 @@ const express = require("express");
 const cors = require("cors");
 const helmet = require("helmet");
 const { clientOrigins, serverPort } = require("./config/env.dev");
-const schema = require("./data/resolvers");
+const { schema, getContext } = require("./data/resolvers");
+const { checkJwt } = require("./authz/check-jwt");
 
 const { messagesRouter } = require("./messages/messages.router");
 
@@ -23,10 +24,12 @@ app.use(express.json());
 app.use("/api", apiRouter);
 app.use(
   "/api/graphql",
-  graphqlHTTP({
+  checkJwt,
+  graphqlHTTP((request) => ({
     schema,
     graphiql: true,
-  })
+    context: getContext(request),
+  }))
 );
 
 apiRouter.use("/messages", messagesRouter);

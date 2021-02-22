@@ -50,13 +50,7 @@ type Ledger {
 }
 
 type Query {
-    member (
-        memberID: Int!
-    ): Member
-
-    memberByEmail (
-        email: String!
-    ): Member
+    me: Member
 
     ledgersByAccountIDFromTo (
         accountID: Int!
@@ -78,6 +72,7 @@ type Mutation {
 
     addAccount(
         memberID:     Int!
+        accountName:  String!
         startBalance: Float
     ): Account!
 
