@@ -1,10 +1,23 @@
-import React from "react";
-
+import React, { useEffect, useState } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
+const { getMe } = require("../data/query");
 
 const Profile = () => {
-  const { user } = useAuth0();
+  const [ me, setMe] = useState("Fetching...");
+  const { user, getAccessTokenSilently } = useAuth0();
   const { name, picture, email } = user;
+
+  useEffect(() => {
+    getAccessTokenSilently()
+      .then(token => {
+        getMe(`Bearer ${token}`)
+            .then(result => result)
+            .then((result) => {
+              setMe(result);
+            });
+        }
+      );
+  }, [getAccessTokenSilently])
 
   return (
     <div>
@@ -24,6 +37,11 @@ const Profile = () => {
       <div className="row">
         <pre className="col-12 text-light bg-dark p-4">
           {JSON.stringify(user, null, 2)}
+        </pre>
+      </div>
+      <div className="row">
+        <pre className="col-12 text-light bg-dark p-4">
+        {JSON.stringify(me, null, 2)}
         </pre>
       </div>
     </div>
