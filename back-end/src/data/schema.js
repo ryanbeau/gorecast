@@ -1,4 +1,9 @@
 const typeDefs = `
+enum GraphMetricType {
+    DAILY
+    WEEKLY
+    MONTHLY
+}
 type Member {
     memberID:      Int!
     email:         String!
@@ -24,6 +29,16 @@ type Account {
     member:        Member!
     accountShares: [AccountShare!]
     ledgers:       [Ledger!]
+
+    incomeByYear(
+        year:   Int!
+        metric: GraphMetricType!
+    ): [Float]
+
+    expensesByYear(
+        year:   Int!
+        metric: GraphMetricType!
+    ): [Float]
 }
 
 type AccountShare {

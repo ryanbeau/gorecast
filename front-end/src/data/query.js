@@ -3,7 +3,7 @@ import { GraphQLClient, gql } from 'graphql-request'
 const client = new GraphQLClient(`${process.env.REACT_APP_SERVER_URL}/api/graphql`)
 
 const queryMe = gql`
-  {
+  query Me($year: Int!) {
     me {
       memberID
       email
@@ -11,6 +11,18 @@ const queryMe = gql`
       accounts {
         accountID
         startBalance
+        incomeByYear(year: $year, metric: MONTHLY)
+        expensesByYear(year: $year, metric: MONTHLY)
+        ledgers {
+          ledgerID
+          accountID
+          categoryID
+          amount
+          isBudget
+          description
+          ledgerFrom
+          ledgerTo
+        }
       }
       accountShares {
         accountID
@@ -19,23 +31,13 @@ const queryMe = gql`
         categoryID
         categoryName
       }
-      ledgers {
-        ledgerID
-        accountID
-        categoryID
-        amount
-        isBudget
-        description
-        ledgerFrom
-        ledgerTo
-      }
     }
   }`
 
 async function getMe(authorization) {
   try {
-    const member = await client.request(queryMe, {}, { authorization });
-    return member.me;
+    console.log(authorization);
+    return (await client.request(queryMe, { year: new Date().getFullYear() }, { authorization })).me;
   } catch (err) {
     console.log(err);
     return "Error fetching data";
