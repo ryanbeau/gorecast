@@ -20,7 +20,7 @@ const Member = sequelize.define('member', {
   email: {
     type: Sequelize.STRING,
     allowNull: false,
-    unique: true,
+    unique: 'email', // name is required to prevent issue: https://github.com/sequelize/sequelize/issues/9653
   },
   memberName: {
     type: Sequelize.STRING,
@@ -59,6 +59,10 @@ const Account = sequelize.define('account', {
     type: Sequelize.INTEGER,
     allowNull: false,
   },
+  accountName: {
+    type: Sequelize.STRING,
+    allowNull: false,
+  },
   startBalance: {
     type: Sequelize.DECIMAL(12, 2),
     allowNull: false,
@@ -77,10 +81,6 @@ const AccountShare = sequelize.define('accountShare', {
   },
   accountID: {
     type: Sequelize.INTEGER,
-    allowNull: false,
-  },
-  accountName: {
-    type: Sequelize.STRING,
     allowNull: false,
   },
   memberID: {
@@ -134,6 +134,13 @@ const Ledger = sequelize.define('ledger', {
   ledgerTo: {
     type: Sequelize.DATE,
     allowNull: false,
+    validate: {
+      isGreaterThanOtherField(value) {
+        if (parseInt(value) < parseInt(this.ledgerFrom)) {
+          throw new Error('ledgerTo must be greater than ledgerFrom.');
+        }
+      }
+    }
   },
 }, { freezeTableName: true });
 
@@ -149,6 +156,7 @@ Ledger.belongsTo(Category, { foreignKey: 'categoryID' });
 sequelize.sync({ alter: true }); // alter: modify columns if missing
 
 module.exports = {
+  sequelize,
   Member,
   Category,
   Account,

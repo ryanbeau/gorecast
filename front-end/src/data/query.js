@@ -2,8 +2,8 @@ import { GraphQLClient, gql } from 'graphql-request'
 
 const client = new GraphQLClient(`${process.env.REACT_APP_SERVER_URL}/api/graphql`)
 
-const queryMe = gql`
-  {
+const meGQL = gql`
+  query Me($from: Date!, $to: Date!) {
     me {
       memberID
       email
@@ -11,6 +11,22 @@ const queryMe = gql`
       accounts {
         accountID
         startBalance
+        yearlyIncomeByMonth: sumLedgerRangeByMetric(from: $from, to: $to, type:INCOME, metric: MONTHLY)
+        yearlyExpenseByMonth: sumLedgerRangeByMetric(from: $from, to: $to, type:EXPENSE, metric: MONTHLY)
+        yearlyExpenseByCategory: sumLedgerRangeByCategory(from: $from, to: $to, type:EXPENSE) {
+          categoryName
+          amount
+        }
+        ledgers {
+          ledgerID
+          accountID
+          categoryID
+          amount
+          isBudget
+          description
+          ledgerFrom
+          ledgerTo
+        }
       }
       accountShares {
         accountID
@@ -19,23 +35,16 @@ const queryMe = gql`
         categoryID
         categoryName
       }
-      ledgers {
-        ledgerID
-        accountID
-        categoryID
-        amount
-        isBudget
-        description
-        ledgerFrom
-        ledgerTo
-      }
     }
   }`
 
-async function getMe(authorization) {
+async function queryMe(authorization) {
   try {
-    const member = await client.request(queryMe, {}, { authorization });
-    return member.me;
+    console.log(authorization);
+    const year = new Date().getFullYear();
+    const from = new Date(year, 0, 1);
+    const to = new Date(year, 11, 31, 23, 59, 59, 999);
+    return (await client.request(meGQL, { from, to }, { authorization })).me;
   } catch (err) {
     console.log(err);
     return "Error fetching data";
@@ -43,5 +52,5 @@ async function getMe(authorization) {
 }
 
 export { 
-  getMe,
+  queryMe,
 };
