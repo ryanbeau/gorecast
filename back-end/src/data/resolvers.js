@@ -1,7 +1,9 @@
 const { makeExecutableSchema } = require('@graphql-tools/schema');
-const Op = require('sequelize').Op
-const { Member, Category, Account, AccountShare, Ledger } = require("./db");
+const { GraphQLScalarType } = require("graphql");
+const { Op } = require('sequelize')
+const { sequelize, Member, Category, Account, AccountShare, Ledger } = require("./db");
 const typeDefs = require("./schema");
+const { mapLedgersAmountToMetric } = require("./map")
 
 const getContext = (request) => {
   if (!request.user || !request.user['https://gorecast.com/email']) {
@@ -21,6 +23,21 @@ const getContext = (request) => {
   }
 }
 
+const queryAccountLedgerRange = async (account, from, to, wherePredicates, additionalQuery) => {
+  return await Ledger.findAll({
+    ...additionalQuery, // prepend additional query statements
+    where: {
+      accountID: account.accountID,
+      [Op.or]: [
+        { ledgerFrom: { [Op.between]: [from, to] } }, // ledgerFrom within dates
+        { ledgerTo: { [Op.between]: [from, to] } },   // ledgerTo within dates
+        { ledgerFrom: { [Op.lte]: to }, ledgerTo: { [Op.gte]: from } }, // completely overlaps from/to
+      ],
+      ...wherePredicates, // append or overwrite additional predicates
+    },
+  });
+}
+
 // GraphQL Resolver
 const resolvers = {
   // Models
@@ -38,6 +55,42 @@ const resolvers = {
     async ledgers(account) {
       console.log(`get:Account->ledgers(memberID:${account.memberID})`);
       return await Ledger.findAll({ where: { memberID: account.memberID } });
+    },
+
+    async sumLedgerRangeByMetric(account, { from, to, type, metric }) {
+      console.log(`get:Account->sumLedgerRangeByMetric(accountID:${account.accountID},from:${from.getTime()},to:${to.getTime()},type:${type},metric:${metric})`);
+      if (from.getTime() > to.getTime()) {
+        to = [from, from = to][0]; //swap dates
+      }
+      const amountPredicate = type == "INCOME" ? { [Op.gt]: 0 } : { [Op.lt]: 0 }; // TODO: just INCOME & EXPENSE supported currently
+      const ledgers = await queryAccountLedgerRange(account, from, to, { isBudget: false, amount: amountPredicate });
+      return mapLedgersAmountToMetric(ledgers, metric, from, to);
+    },
+
+    async sumLedgerRangeByCategory(account, { from, to, type }) {
+      console.log(`get:Account->sumLedgerRangeByCategory(accountID:${account.accountID},from:${from.getTime()},to:${to.getTime()},type:${type})`);
+      if (from.getTime() > to.getTime()) {
+        to = [from, from = to][0]; //swap dates
+      }
+      const amountPredicate = type == "INCOME" ? { [Op.gt]: 0 } : { [Op.lt]: 0 }; // TODO: just INCOME & EXPENSE supported currently
+      const wherePredicates = { isBudget: false, amount: amountPredicate };
+      const additionalQuery = {
+        attributes: [
+          'categoryID',
+          [sequelize.fn('sum', sequelize.col('amount')), 'amount'],
+        ],
+        group: ['categoryID'],
+        include: { model: Category, attributes: [ 'categoryName' ] }
+      };
+      const ledgers = await queryAccountLedgerRange(account, from, to, wherePredicates, additionalQuery);
+      let categoryAmounts = [];
+      for (let i = 0; i < ledgers.length; i++) {
+        categoryAmounts.push({
+          categoryName: ledgers[i].dataValues.category.categoryName,
+          amount: ledgers[i].dataValues.amount,
+        });
+      }
+      return categoryAmounts;
     },
   },
 
@@ -108,19 +161,10 @@ const resolvers = {
 
     async ledgersByAccountIDFromTo(_, { accountID, from, to }, context) {
       console.log(`get:ledgersByAccountIDFromTo(accountID:${accountID},from:${from},to:${to})`);
-      return await Ledger.findAll({
-        where: {
-          accountID,
-          [Op.or]: [
-            { ledgerTo: { [Op.between]: [from, to] } },
-            { ledgerFrom: { [Op.between]: [from, to] } },
-            {
-              ledgerTo: { [Op.lte]: from },
-              ledgerFrom: { [Op.gte]: to },
-            },
-          ],
-        },
-      });
+      if (from.getTime() > to.getTime()) {
+        to = [from, from = to][0]; //swap dates
+      }
+      return await queryAccountLedgerRange({ accountID }, from, to);
     },
   },
 
@@ -155,6 +199,24 @@ const resolvers = {
       return ledger;
     },
   },
+
+  // scalar value conversion
+  Date: new GraphQLScalarType({
+    name: 'Date',
+    description: 'Date custom scalar type',
+    parseValue(value) {
+      return new Date(value); // value from client - convert to Date
+    },
+    serialize(value) {
+      return value.getTime(); // value to client - to Milliseconds from epoch 1970
+    },
+    parseLiteral(ast) {
+      if (ast.kind === Kind.INT) {
+        return new Date(+ast.value) // ast value is always in string format
+      }
+      return null;
+    },
+  }),
 };
 
 module.exports = {

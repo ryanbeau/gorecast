@@ -89,7 +89,7 @@ If these default values require change for local deployment, add them to the `.e
 ### GET: Me
 ```graphql
 {
-    me {
+    query Me($from: Date!, $to: Date!) {
         memberID
         email
         memberName
@@ -97,6 +97,12 @@ If these default values require change for local deployment, add them to the `.e
             accountID
             accountName
             startBalance
+            yearlyIncomeByMonth: sumLedgerRangeByMetric(from: $from, to: $to, type:INCOME, metric: MONTHLY)
+            yearlyExpenseByMonth: sumLedgerRangeByMetric(from: $from, to: $to, type:EXPENSE, metric: MONTHLY)
+            yearlyExpenseByCategory: sumLedgerRangeByCategory(from: $from, to: $to, type:EXPENSE) {
+                categoryName
+                amount
+            }
         }
         accountShares {
             accountID
@@ -115,6 +121,12 @@ If these default values require change for local deployment, add them to the `.e
             ledgerTo
         }
     }
+}
+```
+```
+{
+    "from": 1609477200000,
+    "to": 1641013199000
 }
 ```
 
@@ -190,7 +202,7 @@ mutation addAccountShare($accountID: Int!, $memberID: Int!) {
 
 ### POST: Add Ledger
 ```graphql
-mutation addLedger($accountID: Int!, $memberID: Int!, $categoryID: Int!, $amount: Float!, $description: String, $ledgerFrom: String!, $ledgerTo: String!) {
+mutation addLedger($accountID: Int!, $memberID: Int!, $categoryID: Int!, $amount: Float!, $description: String, $ledgerFrom: Date!, $ledgerTo: Date!) {
     addLedger(accountID: $accountID, memberID: $memberID, categoryID: $categoryID, amount: $amount, description: $description, ledgerFrom: $ledgerFrom, ledgerTo: $ledgerTo) {
         ledgerID
         accountID
