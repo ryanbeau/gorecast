@@ -1,7 +1,7 @@
 const { makeExecutableSchema } = require('@graphql-tools/schema');
 const { GraphQLScalarType } = require("graphql");
 const { Op } = require('sequelize')
-const { Member, Category, Account, AccountShare, Ledger } = require("./db");
+const { sequelize, Member, Category, Account, AccountShare, Ledger } = require("./db");
 const typeDefs = require("./schema");
 const { mapLedgersAmountToMetric } = require("./map")
 
@@ -23,8 +23,9 @@ const getContext = (request) => {
   }
 }
 
-const queryAccountLedgerRange = async (account, from, to, queryPredicates) => {
+const queryAccountLedgerRange = async (account, from, to, wherePredicates, additionalQuery) => {
   return await Ledger.findAll({
+    ...additionalQuery, // prepend additional query statements
     where: {
       accountID: account.accountID,
       [Op.or]: [
@@ -32,7 +33,7 @@ const queryAccountLedgerRange = async (account, from, to, queryPredicates) => {
         { ledgerTo: { [Op.between]: [from, to] } },   // ledgerTo within dates
         { ledgerFrom: { [Op.lte]: to }, ledgerTo: { [Op.gte]: from } }, // completely overlaps from/to
       ],
-      ...queryPredicates, // append or overwrite additional predicates
+      ...wherePredicates, // append or overwrite additional predicates
     },
   });
 }
@@ -61,9 +62,35 @@ const resolvers = {
       if (from.getTime() > to.getTime()) {
         to = [from, from = to][0]; //swap dates
       }
-      const amountPredicate = type == "INCOME" ? { [Op.gt]: 0 } : { [Op.lt]: 0 };
-      const ledgers = await queryAccountLedgerRange(account, from, to, { isBudget: false, amount: amountPredicate }); // income is greater than 0
+      const amountPredicate = type == "INCOME" ? { [Op.gt]: 0 } : { [Op.lt]: 0 }; // TODO: just INCOME & EXPENSE supported currently
+      const ledgers = await queryAccountLedgerRange(account, from, to, { isBudget: false, amount: amountPredicate });
       return mapLedgersAmountToMetric(ledgers, metric, from, to);
+    },
+
+    async sumLedgerRangeByCategory(account, { from, to, type }) {
+      console.log(`get:Account->sumLedgerRangeByCategory(accountID:${account.accountID},from:${from.getTime()},to:${to.getTime()},type:${type})`);
+      if (from.getTime() > to.getTime()) {
+        to = [from, from = to][0]; //swap dates
+      }
+      const amountPredicate = type == "INCOME" ? { [Op.gt]: 0 } : { [Op.lt]: 0 }; // TODO: just INCOME & EXPENSE supported currently
+      const wherePredicates = { isBudget: false, amount: amountPredicate };
+      const additionalQuery = {
+        attributes: [
+          'categoryID',
+          [sequelize.fn('sum', sequelize.col('amount')), 'amount'],
+        ],
+        group: ['categoryID'],
+        include: { model: Category, attributes: [ 'categoryName' ] }
+      };
+      const ledgers = await queryAccountLedgerRange(account, from, to, wherePredicates, additionalQuery);
+      let categoryAmounts = [];
+      for (let i = 0; i < ledgers.length; i++) {
+        categoryAmounts.push({
+          categoryName: ledgers[i].dataValues.category.categoryName,
+          amount: ledgers[i].dataValues.amount,
+        });
+      }
+      return categoryAmounts;
     },
   },
 
@@ -137,7 +164,7 @@ const resolvers = {
       if (from.getTime() > to.getTime()) {
         to = [from, from = to][0]; //swap dates
       }
-      return await queryAccountLedgerRange({ accountID }, from, to, {});
+      return await queryAccountLedgerRange({ accountID }, from, to);
     },
   },
 

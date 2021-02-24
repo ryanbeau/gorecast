@@ -156,6 +156,7 @@ Ledger.belongsTo(Category, { foreignKey: 'categoryID' });
 sequelize.sync({ alter: true }); // alter: modify columns if missing
 
 module.exports = {
+  sequelize,
   Member,
   Category,
   Account,

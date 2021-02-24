@@ -2,14 +2,17 @@ const typeDefs = `
 scalar Date
 
 enum GraphMetricType {
-    DAILY
-    WEEKLY
     MONTHLY
 }
 
 enum LedgerType {
     INCOME
     EXPENSE
+}
+
+type CategoryAmount {
+    categoryName: String!
+    amount:       Float!
 }
 
 type Member {
@@ -44,6 +47,12 @@ type Account {
         type:   LedgerType!
         metric: GraphMetricType!
     ): [Float]
+
+    sumLedgerRangeByCategory(
+        from:   Date!
+        to:     Date!
+        type:   LedgerType!
+    ): [CategoryAmount]
 }
 
 type AccountShare {

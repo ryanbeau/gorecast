@@ -1,22 +1,31 @@
 import React, { useEffect, useState } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
-import Chart from 'react-apexcharts'
-const { options } = require("../data/stacked-columns");
-const { getMe } = require("../data/query");
+import { Donut } from "../charts/donut"
+import { StackedColumn } from "../charts/stacked-column";
+const { queryMe } = require("../data/query");
 
-const initialSeries = [
-  {
-    name: 'Income',
-    data: [0], // empty values are required
-  },
-  {
-    name: 'Expenses',
-    data: [0], // empty values are required
-  },
-];
+const initialSeries = {
+  yearlyExpenseIncome: [
+    {
+      name: 'Income',
+      data: [0], // empty values are required
+    },
+    {
+      name: 'Expenses',
+      data: [0], // empty values are required
+    },
+  ],
+  categoryExpense: [],
+};
+
+const initialLabels = {
+  monthlyLabels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+  categoryExpenses: [],
+}
 
 const Profile = () => {
   const [series, setSeries] = useState(initialSeries);
+  const [labels, setLabels] = useState(initialLabels);
   const [me, setMe] = useState("Fetching...");
   const { user, getAccessTokenSilently } = useAuth0();
   const { name, picture, email } = user;
@@ -24,25 +33,36 @@ const Profile = () => {
   useEffect(() => {
     getAccessTokenSilently()
       .then((token) => {
-        getMe(`Bearer ${token}`)
+        queryMe(`Bearer ${token}`)
           .then(result => {
             setMe(result);
           });
       });
-  }, [getAccessTokenSilently])
+  }, [user])
 
   useEffect(() => {
+    // build labels and series
     if (me && me.accounts && me.accounts.length > 0) {
-      setSeries([
-        {
-          name: 'Income',
-          data: me.accounts[0].yearlyIncomeByMonth,
-        },
-        {
-          name: 'Expenses',
-          data: me.accounts[0].yearlyExpenseByMonth,
-        },
-      ]);
+      initialLabels.categoryExpenses = [];
+      let newCategoryExpense = [];
+      for (let i = 0; i < me.accounts[0].yearlyExpenseByCategory.length; i++) {
+        initialLabels.categoryExpenses.push(me.accounts[0].yearlyExpenseByCategory[i].categoryName);
+        newCategoryExpense.push(Math.abs(me.accounts[0].yearlyExpenseByCategory[i].amount)); // donut MUST be positive
+      }
+      setLabels(initialLabels);
+      setSeries({
+        yearlyExpenseIncome: [
+          {
+            name: 'Income',
+            data: me.accounts[0].yearlyIncomeByMonth,
+          },
+          {
+            name: 'Expenses',
+            data: me.accounts[0].yearlyExpenseByMonth,
+          },
+        ],
+        categoryExpense: newCategoryExpense,
+      });
     }
   }, [me]);
 
@@ -72,9 +92,8 @@ const Profile = () => {
         </pre>
       </div>
 
-      <div id="chart">
-        <Chart options={options} series={series} type="bar" height={350} />
-      </div>
+      <StackedColumn labels={labels.monthlyLabels} series={series.yearlyExpenseIncome} height={350} title={`Income vs Expense ${new Date().getFullYear()}`} />
+      <Donut labels={labels.categoryExpenses} series={series.categoryExpense} width={380} height={246} title={'Expenses by Category'} />
     </div>
   );
 };
