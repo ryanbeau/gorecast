@@ -3,7 +3,7 @@ import { GraphQLClient, gql } from 'graphql-request'
 const client = new GraphQLClient(`${process.env.REACT_APP_SERVER_URL}/api/graphql`)
 
 const queryMe = gql`
-  query Me($year: Int!) {
+  query Me($from: Date!, $to: Date!) {
     me {
       memberID
       email
@@ -11,8 +11,8 @@ const queryMe = gql`
       accounts {
         accountID
         startBalance
-        incomeByYear(year: $year, metric: MONTHLY)
-        expensesByYear(year: $year, metric: MONTHLY)
+        yearlyIncomeByMonth: sumLedgerRangeByMetric(from: $from, to: $to, type:INCOME, metric: MONTHLY)
+        yearlyExpenseByMonth: sumLedgerRangeByMetric(from: $from, to: $to, type:EXPENSE, metric: MONTHLY)
         ledgers {
           ledgerID
           accountID
@@ -37,7 +37,10 @@ const queryMe = gql`
 async function getMe(authorization) {
   try {
     console.log(authorization);
-    return (await client.request(queryMe, { year: new Date().getFullYear() }, { authorization })).me;
+    const year = new Date().getFullYear();
+    const from = new Date(year, 0, 1);
+    const to = new Date(year, 11, 31, 23, 59, 59, 999);
+    return (await client.request(queryMe, { from, to }, { authorization })).me;
   } catch (err) {
     console.log(err);
     return "Error fetching data";

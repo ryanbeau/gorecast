@@ -22,7 +22,6 @@ const Profile = () => {
   const { name, picture, email } = user;
 
   useEffect(() => {
-    console.log("useEffect1");
     getAccessTokenSilently()
       .then((token) => {
         getMe(`Bearer ${token}`)
@@ -30,21 +29,18 @@ const Profile = () => {
             setMe(result);
           });
       });
-  }, [])
+  }, [getAccessTokenSilently])
 
   useEffect(() => {
-    console.log("useEffect2");
     if (me && me.accounts && me.accounts.length > 0) {
-      console.log("pain");
-      console.log(me.accounts[0].incomeByYear);
       setSeries([
         {
           name: 'Income',
-          data: me.accounts[0].incomeByYear,
+          data: me.accounts[0].yearlyIncomeByMonth,
         },
         {
           name: 'Expenses',
-          data: me.accounts[0].expensesByYear,
+          data: me.accounts[0].yearlyExpenseByMonth,
         },
       ]);
     }

@@ -1,9 +1,17 @@
 const typeDefs = `
+scalar Date
+
 enum GraphMetricType {
     DAILY
     WEEKLY
     MONTHLY
 }
+
+enum LedgerType {
+    INCOME
+    EXPENSE
+}
+
 type Member {
     memberID:      Int!
     email:         String!
@@ -30,13 +38,10 @@ type Account {
     accountShares: [AccountShare!]
     ledgers:       [Ledger!]
 
-    incomeByYear(
-        year:   Int!
-        metric: GraphMetricType!
-    ): [Float]
-
-    expensesByYear(
-        year:   Int!
+    sumLedgerRangeByMetric(
+        from:   Date!
+        to:     Date!
+        type:   LedgerType!
         metric: GraphMetricType!
     ): [Float]
 }
@@ -57,8 +62,8 @@ type Ledger {
     amount:      Float!
     isBudget:    Boolean!
     description: String
-    ledgerFrom:  String!
-    ledgerTo:    String!
+    ledgerFrom:  Date!
+    ledgerTo:    Date!
     account:     Account!
     member:      Member!
     category:    Category!
@@ -69,8 +74,8 @@ type Query {
 
     ledgersByAccountIDFromTo (
         accountID: Int!
-        from:      String!
-        to:        String!
+        from:      Date!
+        to:        Date!
     ): [Ledger!]
 }
 
@@ -102,8 +107,8 @@ type Mutation {
         categoryID:  Int!
         amount:      Float!
         description: String
-        ledgerFrom:  String!
-        ledgerTo:    String!
+        ledgerFrom:  Date!
+        ledgerTo:    Date!
     ): Ledger!
 }
 `;
