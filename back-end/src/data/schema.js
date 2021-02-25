@@ -1,4 +1,6 @@
-const typeDefs = `
+const { gql } = require('graphql-request');
+
+const typeDefs = gql`
 scalar Date
 
 enum GraphMetricType {
