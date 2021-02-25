@@ -50,5 +50,48 @@ exports[`views/profile - logged in renders correctly 1`] = `
       "Fetching..."
     </pre>
   </div>
+  <StackedColumn
+    height={350}
+    labels={
+      Array [
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
+        "May",
+        "Jun",
+        "Jul",
+        "Aug",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dec",
+      ]
+    }
+    series={
+      Array [
+        Object {
+          "data": Array [
+            0,
+          ],
+          "name": "Income",
+        },
+        Object {
+          "data": Array [
+            0,
+          ],
+          "name": "Expenses",
+        },
+      ]
+    }
+    title="Income vs Expense 2021"
+  />
+  <Donut
+    height={246}
+    labels={Array []}
+    series={Array []}
+    title="Expenses by Category"
+    width={380}
+  />
 </div>
 `;
