@@ -178,7 +178,7 @@ mutation addAccount($memberID: Int!, $accountName: String!, $startBalance: Float
 ```json
 {
     "memberID": 1,
-    "categoryName": "Salary",
+    "accountName": "Salary",
     "startBalance": 0.00
 }
 ```
@@ -219,11 +219,10 @@ mutation addLedger($accountID: Int!, $memberID: Int!, $categoryID: Int!, $amount
 {
     "accountID": 1,
     "memberID": 1,
-    "memberID": 1,
     "categoryID": 1,
     "amount": 123.45,
-    "description": "McDonald's",
-    "ledgerFrom": "2012-04-23T18:25:43.511Z",
-    "ledgerTo": "2012-04-23T18:25:43.511Z"
+    "description": "Paycheck",
+    "ledgerFrom": "2021-04-23T18:25:43.511Z",
+    "ledgerTo": "2021-04-23T18:25:43.511Z"
 }
 ```
