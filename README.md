@@ -73,7 +73,7 @@ With the `.env` configuration values set, run the API server by issuing the foll
 npm start
 ```
 
-# MySQL Database
+### MySQL Database
 
 The default database `gorecast` uses the following default connection values:
 ```bash
@@ -84,7 +84,7 @@ DB_PASSWORD=root
 ```
 If these default values require change for local deployment, add them to the `.env` file with required values.
 
-# GraphQL
+## GraphQL
 
 ### GET: Me
 ```graphql
