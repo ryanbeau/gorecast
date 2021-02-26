@@ -43,13 +43,18 @@ const Profile = () => {
   useEffect(() => {
     // build labels and series
     if (me && me.accounts && me.accounts.length > 0) {
-      initialLabels.categoryExpenses = [];
+      const newLabels = {
+        monthlyLabels: initialLabels.monthlyLabels,
+        categoryExpenses: [],
+      };
       let newCategoryExpense = [];
-      for (let i = 0; i < me.accounts[0].yearlyExpenseByCategory.length; i++) {
-        initialLabels.categoryExpenses.push(me.accounts[0].yearlyExpenseByCategory[i].categoryName);
-        newCategoryExpense.push(Math.abs(me.accounts[0].yearlyExpenseByCategory[i].amount)); // donut MUST be positive
+      for (let i = 0; i < me.accounts[0].yearlyExpenseByCategory.categories.length; i++) {
+        if (me.accounts[0].yearlyExpenseByCategory.categories[i].expenses.length > 0) {
+          newLabels.categoryExpenses.push(me.accounts[0].yearlyExpenseByCategory.categories[i].category.categoryName);
+          newCategoryExpense.push(Math.abs(me.accounts[0].yearlyExpenseByCategory.categories[i].expenses[0])); // donut MUST be positive
+        }
       }
-      setLabels(initialLabels);
+      setLabels(newLabels);
       setSeries({
         yearlyExpenseIncome: [
           {

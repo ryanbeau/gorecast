@@ -15,11 +15,11 @@ enum LedgerType {
     EXPENSE
 }
 
-type CategoryAmount {
-    categoryName: String!
-    amount:       Float!
+type CategoryAmounts {
+    category: Category
+    expenses: [Float]
+    incomes:  [Float]
 }
-
 
 type LedgerRangeMetric {
     from:     Date!
@@ -27,6 +27,13 @@ type LedgerRangeMetric {
     count:    Int!
     expenses: [Float]
     incomes:  [Float]
+}
+
+type LedgerRangeCategoryMetric {
+    from:       Date!
+    to:         Date!
+    count:      Int!
+    categories: [CategoryAmounts!]
 }
 
 type Member {
@@ -62,11 +69,12 @@ type Account {
         metric: GraphMetricType!
     ): LedgerRangeMetric
 
-    sumLedgerRangeByCategory(
+    sumLedgerRangeCategoryByMetric(
         from:   Date!
         to:     Date!
-        type:   LedgerType!
-    ): [CategoryAmount]
+        type:   [LedgerType!]!
+        metric: GraphMetricType!
+    ): LedgerRangeCategoryMetric
 }
 
 type AccountShare {

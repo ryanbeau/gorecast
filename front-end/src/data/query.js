@@ -18,9 +18,17 @@ const meGQL = gql`
             incomes
             expenses
         }
-        yearlyExpenseByCategory: sumLedgerRangeByCategory(from: $from, to: $to, type:EXPENSE) {
-          categoryName
-          amount
+        yearlyExpenseByCategory: sumLedgerRangeCategoryByMetric(from: $from, to: $to, type:[EXPENSE], metric: YEARLY) {
+            from
+            to
+            count
+            categories {
+                category {
+                    categoryName
+                }
+                incomes
+                expenses
+            }
         }
         ledgers {
           ledgerID
