@@ -9,7 +9,17 @@ const Donut = ({labels, series, width, height, title}) => {
     plotOptions: {
       pie: {
         startAngle: -90,
-        endAngle: 270
+        endAngle: 270,
+        expandOnClick: false,
+        donut: {
+          labels: {
+            show: true,
+            total: {
+              show: true,
+              showAlways: true,
+            }
+          },
+        }
       }
     },
     dataLabels: {
