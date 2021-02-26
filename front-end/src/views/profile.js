@@ -54,11 +54,11 @@ const Profile = () => {
         yearlyExpenseIncome: [
           {
             name: 'Income',
-            data: me.accounts[0].yearlyIncomeByMonth,
+            data: me.accounts[0].yearlyLedgersByMonth.incomes,
           },
           {
             name: 'Expenses',
-            data: me.accounts[0].yearlyExpenseByMonth,
+            data: me.accounts[0].yearlyLedgersByMonth.expenses,
           },
         ],
         categoryExpense: newCategoryExpense,

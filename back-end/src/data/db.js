@@ -1,4 +1,5 @@
 const Sequelize = require('sequelize');
+var { DateTime } = require('luxon');
 const { dbPort, dbHost, dbUser, dbPassword } = require("../config/env.dev");
 
 const sequelize = new Sequelize('gorecast', dbUser, dbPassword,
@@ -130,6 +131,9 @@ const Ledger = sequelize.define('ledger', {
   ledgerFrom: {
     type: Sequelize.DATE,
     allowNull: false,
+    get: function() {
+      return DateTime.fromJSDate(this.getDataValue('ledgerFrom')).toUTC();
+    },
   },
   ledgerTo: {
     type: Sequelize.DATE,
@@ -140,6 +144,9 @@ const Ledger = sequelize.define('ledger', {
           throw new Error('ledgerTo must be greater than ledgerFrom.');
         }
       }
+    },
+    get: function() {
+      return DateTime.fromJSDate(this.getDataValue('ledgerTo')).toUTC();
     }
   },
 }, { freezeTableName: true });
