@@ -1,0 +1,34 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders correctly 1`] = `
+<div
+  className="container"
+>
+  <h1>
+    External API
+  </h1>
+  <p>
+    Use these buttons to call an external API. The protected API call has an access token in its authorization header that will be validated by the API server.
+  </p>
+  <div
+    aria-label="External API Requests"
+    className="btn-group mt-5"
+    role="group"
+  >
+    <button
+      className="btn btn-primary"
+      onClick={[Function]}
+      type="button"
+    >
+      Get Public Message
+    </button>
+    <button
+      className="btn btn-primary"
+      onClick={[Function]}
+      type="button"
+    >
+      Get Protected Message
+    </button>
+  </div>
+</div>
+`;
