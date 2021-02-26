@@ -60,10 +60,23 @@ const resolvers = {
 
     async sumLedgerRangeByMetric(account, { from, to, type, metric }) {
       console.log(`get:Account->sumLedgerRangeByMetric(accountID:${account.accountID},from:${from.valueOf()},to:${to.valueOf()},type:${type},metric:${metric})`);
+      if (!type || type.length == 0) {
+        return null;
+      }
+
       if (from.valueOf() > to.valueOf()) {
         to = [from, from = to][0]; //swap dates
       }
-      const amountPredicate = type == "INCOME" ? { [Op.gt]: 0 } : { [Op.lt]: 0 }; // TODO: just INCOME & EXPENSE supported currently
+      from = from.startOf('day');
+      to = to.endOf('day');
+
+      let amountPredicate = { [Op.ne]: 0 }; // expense & income
+      if (!type.includes("INCOME")) {
+        amountPredicate = { [Op.lt]: 0 }; //expense
+      } else if (!type.includes("EXPENSE")) {
+        amountPredicate = { [Op.gt]: 0 }; //income
+      }
+
       const ledgers = await queryAccountLedgerRange(account, from, to, { isBudget: false, amount: amountPredicate });
       return mapLedgersAmountToMetric(ledgers, metric, from, to);
     },
@@ -73,6 +86,8 @@ const resolvers = {
       if (from.valueOf() > to.valueOf()) {
         to = [from, from = to][0]; //swap dates
       }
+      from = from.startOf('day');
+      to = to.endOf('day');
       const amountPredicate = type == "INCOME" ? { [Op.gt]: 0 } : { [Op.lt]: 0 }; // TODO: just INCOME & EXPENSE supported currently
       const wherePredicates = { isBudget: false, amount: amountPredicate };
       const additionalQuery = {

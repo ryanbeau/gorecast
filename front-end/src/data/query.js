@@ -11,8 +11,13 @@ const meGQL = gql`
       accounts {
         accountID
         startBalance
-        yearlyIncomeByMonth: sumLedgerRangeByMetric(from: $from, to: $to, type:INCOME, metric: MONTHLY)
-        yearlyExpenseByMonth: sumLedgerRangeByMetric(from: $from, to: $to, type:EXPENSE, metric: MONTHLY)
+        yearlyLedgersByMonth: sumLedgerRangeByMetric(from: $from, to: $to, type:[INCOME, EXPENSE], metric: MONTHLY) {
+            from
+            to
+            count
+            incomes
+            expenses
+        }
         yearlyExpenseByCategory: sumLedgerRangeByCategory(from: $from, to: $to, type:EXPENSE) {
           categoryName
           amount
@@ -44,7 +49,7 @@ async function queryMe(authorization) {
     const year = new Date().getFullYear();
     const from = new Date(year, 0, 1);
     const to = new Date(year, 11, 31, 23, 59, 59, 999);
-    return (await client.request(meGQL, { from, to }, { authorization })).me;
+    return (await client.request(meGQL, { from: from.getTime(), to: to.getTime() }, { authorization })).me;
   } catch (err) {
     console.log(err);
     return "Error fetching data";

@@ -4,7 +4,10 @@ const typeDefs = gql`
 scalar Date
 
 enum GraphMetricType {
+    DAILY
+    WEEKLY
     MONTHLY
+    YEARLY
 }
 
 enum LedgerType {
@@ -15,6 +18,15 @@ enum LedgerType {
 type CategoryAmount {
     categoryName: String!
     amount:       Float!
+}
+
+
+type LedgerRangeMetric {
+    from:     Date!
+    to:       Date!
+    count:    Int!
+    expenses: [Float]
+    incomes:  [Float]
 }
 
 type Member {
@@ -46,9 +58,9 @@ type Account {
     sumLedgerRangeByMetric(
         from:   Date!
         to:     Date!
-        type:   LedgerType!
+        type:   [LedgerType!]!
         metric: GraphMetricType!
-    ): [Float]
+    ): LedgerRangeMetric
 
     sumLedgerRangeByCategory(
         from:   Date!
@@ -117,6 +129,7 @@ type Mutation {
         memberID:    Int!
         categoryID:  Int!
         amount:      Float!
+        isBudget:    Boolean!
         description: String
         ledgerFrom:  Date!
         ledgerTo:    Date!

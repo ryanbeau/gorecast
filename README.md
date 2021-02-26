@@ -75,7 +75,7 @@ npm start
 
 # MySQL Database
 
-The default database `gorecase` uses the following default connection values:
+The default database `gorecast` uses the following default connection values:
 ```bash
 DB_PORT=3306
 DB_HOST=localhost
@@ -97,8 +97,13 @@ If these default values require change for local deployment, add them to the `.e
             accountID
             accountName
             startBalance
-            yearlyIncomeByMonth: sumLedgerRangeByMetric(from: $from, to: $to, type:INCOME, metric: MONTHLY)
-            yearlyExpenseByMonth: sumLedgerRangeByMetric(from: $from, to: $to, type:EXPENSE, metric: MONTHLY)
+            yearlyLedgersByMonth: sumLedgerRangeByMetric(from: $from, to: $to, type:[INCOME, EXPENSE], metric: MONTHLY) {
+                from
+                to
+                count
+                incomes
+                expenses
+            }
             yearlyExpenseByCategory: sumLedgerRangeByCategory(from: $from, to: $to, type:EXPENSE) {
                 categoryName
                 amount
@@ -116,6 +121,7 @@ If these default values require change for local deployment, add them to the `.e
             accountID
             categoryID
             amount
+            isBudget
             description
             ledgerFrom
             ledgerTo
@@ -123,10 +129,10 @@ If these default values require change for local deployment, add them to the `.e
     }
 }
 ```
-```
+```json
 {
-    "from": 1609477200000,
-    "to": 1641013199000
+    "from": 1609459200000,
+    "to": 1640995199000
 }
 ```
 
@@ -178,7 +184,7 @@ mutation addAccount($memberID: Int!, $accountName: String!, $startBalance: Float
 ```json
 {
     "memberID": 1,
-    "categoryName": "Salary",
+    "accountName": "Salary",
     "startBalance": 0.00
 }
 ```
@@ -209,6 +215,7 @@ mutation addLedger($accountID: Int!, $memberID: Int!, $categoryID: Int!, $amount
         memberID
         categoryID
         amount
+        isBudget
         description
         ledgerFrom
         ledgerTo
@@ -219,11 +226,11 @@ mutation addLedger($accountID: Int!, $memberID: Int!, $categoryID: Int!, $amount
 {
     "accountID": 1,
     "memberID": 1,
-    "memberID": 1,
     "categoryID": 1,
-    "amount": 123.45,
-    "description": "McDonald's",
-    "ledgerFrom": "2012-04-23T18:25:43.511Z",
-    "ledgerTo": "2012-04-23T18:25:43.511Z"
+    "amount": 12345.67,
+    "isBudget": false,
+    "description": "Yearly Bonus",
+    "ledgerFrom": 1609459200000,
+    "ledgerTo": 1640995199000
 }
 ```
