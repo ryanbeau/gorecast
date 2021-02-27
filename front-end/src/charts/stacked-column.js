@@ -1,16 +1,16 @@
 import React from "react";
 import ReactApexChart from 'react-apexcharts';
 
-const StackedColumn = ({labels, series, width, height, title}) => {
+const StackedColumn = ({ data, width, height, title }) => {
   const options = {
     chart: {
       type: 'bar',
       stacked: true,
       toolbar: {
-        show: true
+        show: true,
       },
       zoom: {
-        enabled: true
+        enabled: false,
       }
     },
     responsive: [{
@@ -26,30 +26,42 @@ const StackedColumn = ({labels, series, width, height, title}) => {
     dataLabels: {
       enabled: false
     },
-    colors: ['#43bcff', '#FF4560'],
+    theme: {
+      mode: 'light',
+      palette: 'palette4'
+    },
     plotOptions: {
       bar: {
         borderRadius: 8,
-        horizontal: false
+        horizontal: false,
+        onItemClick: {
+          toggleDataSeries: true
+        },
       },
     },
     title: {
       text: title
     },
     xaxis: {
-      categories: labels,
+      type: data?.xtype,
+      labels: {
+        format: data?.xlabelFormat,
+      },
+    },
+    tooltip: {
+      x: {
+        format: data?.xtooltipFormat,
+      },
     },
     legend: {
       position: 'right',
-      offsetY: 40
+      offsetY: 40,
     }
   }
 
   return (
-    <ReactApexChart type="bar" options={options} series={series} width={width} height={height} />
+    <ReactApexChart type="bar" options={options} series={data?.series ?? []} width={width} height={height} />
   );
 }
 
-export { 
-  StackedColumn,
-};
+export default StackedColumn;
