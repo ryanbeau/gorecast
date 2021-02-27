@@ -1,9 +1,10 @@
 import { GraphQLClient, gql } from 'graphql-request'
+var { DateTime } = require('luxon');
 
 const client = new GraphQLClient(`${process.env.REACT_APP_SERVER_URL}/api/graphql`)
 
 const meGQL = gql`
-  query Me($from: Date!, $to: Date!) {
+  query Me($oneMonthFrom: Date!, $oneMonthTo: Date!, $currentYearFrom: Date!, $currentYearTo: Date!) {
     me {
       memberID
       email
@@ -11,16 +12,26 @@ const meGQL = gql`
       accounts {
         accountID
         startBalance
-        yearlyLedgersByMonth: sumLedgerRangeByMetric(from: $from, to: $to, type:[INCOME, EXPENSE], metric: MONTHLY) {
+        oneMonthLedgersByDay: sumLedgerRangeByMetric(from: $oneMonthFrom, to: $oneMonthTo, type:[INCOME, EXPENSE], metric: DAILY) {
             from
             to
+            metric
             count
             incomes
             expenses
         }
-        yearlyExpenseByCategory: sumLedgerRangeCategoryByMetric(from: $from, to: $to, type:[EXPENSE], metric: YEARLY) {
+        currentYearLedgersByMonth: sumLedgerRangeByMetric(from: $currentYearFrom, to: $currentYearTo, type:[INCOME, EXPENSE], metric: MONTHLY) {
             from
             to
+            metric
+            count
+            incomes
+            expenses
+        }
+        currentYearExpenseByCategory: sumLedgerRangeCategoryByMetric(from: $currentYearFrom, to: $currentYearTo, type:[EXPENSE], metric: YEARLY) {
+            from
+            to
+            metric
             count
             categories {
                 category {
@@ -54,16 +65,25 @@ const meGQL = gql`
 async function queryMe(authorization) {
   try {
     console.log(authorization);
-    const year = new Date().getFullYear();
-    const from = new Date(Date.UTC(year, 0, 1));
-    const to = new Date(Date.UTC(year, 11, 31, 23, 59, 59));
-    return (await client.request(meGQL, { from: from.getTime(), to: to.getTime() }, { authorization })).me;
+
+    const now = DateTime.utc();
+
+    const oneMonthTo = now.endOf('day');
+    const oneMonthFrom = oneMonthTo.minus({ months: 1 }).startOf('day');
+
+    const currentYearFrom = now.startOf('year');
+    const currentYearTo = now.endOf('year');
+
+    return (await client.request(meGQL, { 
+      oneMonthFrom: oneMonthFrom.valueOf(),
+      oneMonthTo: oneMonthTo.valueOf(),
+      currentYearFrom: currentYearFrom.valueOf(), 
+      currentYearTo: currentYearTo.valueOf(),
+    }, { authorization })).me;
   } catch (err) {
     console.log(err);
-    return "Error fetching data";
+    throw new Error(err.message);
   }
 }
 
-export { 
-  queryMe,
-};
+export default queryMe;

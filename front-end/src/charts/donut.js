@@ -1,10 +1,13 @@
 import React from "react";
 import ReactApexChart from 'react-apexcharts';
 
-const Donut = ({labels, series, width, height, title}) => {
+const Donut = ({ data, width, height, title }) => {
   const options = {
     chart: {
       type: 'donut',
+      toolbar: {
+        show: true
+      },
     },
     plotOptions: {
       pie: {
@@ -25,6 +28,7 @@ const Donut = ({labels, series, width, height, title}) => {
     dataLabels: {
       enabled: false
     },
+    labels: data?.labels ?? [],
     title: {
       text: title
     },
@@ -32,7 +36,6 @@ const Donut = ({labels, series, width, height, title}) => {
       mode: 'light',
       palette: 'palette4'
     },
-    labels: labels,
     responsive: [{
       breakpoint: width || 380,
       options: {
@@ -47,10 +50,8 @@ const Donut = ({labels, series, width, height, title}) => {
   };
 
   return (
-    <ReactApexChart type="donut" options={options} series={series} width={width} height={height} />
+    <ReactApexChart type="donut" options={options} series={data?.series ?? []} width={width} height={height} />
   );
 }
 
-export { 
-  Donut,
-};
+export default Donut;

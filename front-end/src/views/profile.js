@@ -1,32 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
-import { Donut } from "../charts/donut"
-import { StackedColumn } from "../charts/stacked-column";
-const { queryMe } = require("../data/query");
+import { Area, Donut, StackedColumn } from "../charts";
+import { Card, Container, Row, Col } from 'react-bootstrap';
+import "bootstrap/dist/css/bootstrap.min.css";
+const { buildAreaChartData, buildPieChartData, buildStackColumnData, queryMe } = require("../data");
 
-const initialSeries = {
-  yearlyExpenseIncome: [
-    {
-      name: 'Income',
-      data: [0], // empty values are required
-    },
-    {
-      name: 'Expenses',
-      data: [0], // empty values are required
-    },
-  ],
-  categoryExpense: [],
-};
-
-const initialLabels = {
-  monthlyLabels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-  categoryExpenses: [],
+const getInitialMe = () => {
+  return {
+    accounts: [],
+  }
 }
 
 const Profile = () => {
-  const [series, setSeries] = useState(initialSeries);
-  const [labels, setLabels] = useState(initialLabels);
-  const [me, setMe] = useState("Fetching...");
+  const [me, setMe] = useState(getInitialMe());
   const { user, getAccessTokenSilently } = useAuth0();
   const { name, picture, email } = user;
 
@@ -35,71 +21,72 @@ const Profile = () => {
       .then((token) => {
         queryMe(`Bearer ${token}`)
           .then(result => {
-            setMe(result);
+            if (result) {
+              console.warn(result);
+              setMe(result);
+            }
+          })
+          .catch(error => {
+            // TODO : do something with this
           });
       });
-  }, [user])
-
-  useEffect(() => {
-    // build labels and series
-    if (me && me.accounts && me.accounts.length > 0) {
-      const newLabels = {
-        monthlyLabels: initialLabels.monthlyLabels,
-        categoryExpenses: [],
-      };
-      let newCategoryExpense = [];
-      for (let i = 0; i < me.accounts[0].yearlyExpenseByCategory.categories.length; i++) {
-        if (me.accounts[0].yearlyExpenseByCategory.categories[i].expenses.length > 0) {
-          newLabels.categoryExpenses.push(me.accounts[0].yearlyExpenseByCategory.categories[i].category.categoryName);
-          newCategoryExpense.push(Math.abs(me.accounts[0].yearlyExpenseByCategory.categories[i].expenses[0])); // donut MUST be positive
-        }
-      }
-      setLabels(newLabels);
-      setSeries({
-        yearlyExpenseIncome: [
-          {
-            name: 'Income',
-            data: me.accounts[0].yearlyLedgersByMonth.incomes,
-          },
-          {
-            name: 'Expenses',
-            data: me.accounts[0].yearlyLedgersByMonth.expenses,
-          },
-        ],
-        categoryExpense: newCategoryExpense,
-      });
-    }
-  }, [me]);
+  }, [user, getAccessTokenSilently])
 
   return (
-    <div>
-      <div className="row align-items-center profile-header">
-        <div className="col-md-2 mb-3">
+    <Container>
+      <Row className="align-items-center profile-header">
+        <Col md="2" className="mb-3">
           <img
             src={picture}
             alt="Profile"
             className="rounded-circle img-fluid profile-picture mb-3 mb-md-0"
           />
-        </div>
-        <div className="col-md text-center text-md-left">
+        </Col>
+        <Col md className="text-center text-md-left">
           <h2>{name}</h2>
           <p className="lead text-muted">{email}</p>
-        </div>
-      </div>
-      <div className="row">
-        <pre className="col-12 text-light bg-dark p-4">
-          {JSON.stringify(user, null, 2)}
-        </pre>
-      </div>
-      <div className="row">
-        <pre className="col-12 text-light bg-dark p-4">
-          {JSON.stringify(me, null, 2)}
-        </pre>
-      </div>
-
-      <StackedColumn labels={labels.monthlyLabels} series={series.yearlyExpenseIncome} height={350} title={`Income vs Expense ${new Date().getFullYear()}`} />
-      <Donut labels={labels.categoryExpenses} series={series.categoryExpense} width={380} height={246} title={'Expenses by Category'} />
-    </div>
+        </Col>
+      </Row>
+      {me.accounts.map((account, index) => (
+        <Row key={index}>
+          <Col>
+            <Row className="mb-3">
+              <Col md="auto" className="d-flex">
+                <Card border="0" className="shadow-sm align-self-stretch">
+                  <Area data={buildAreaChartData(account.oneMonthLedgersByDay)} width={380} height={246} title={'Past Month'} />
+                </Card>
+              </Col>
+              <Col md="auto" className="d-flex">
+                <Card border="0" className="shadow-sm align-self-stretch">
+                  <Donut data={buildPieChartData(account.currentYearExpenseByCategory)} width={380} height={246} title={'Monthly Expenses'} />
+                </Card>
+              </Col>
+            </Row>
+            <Row className="mb-3">
+              <Col>
+                <Card border="0"  className="shadow-sm">
+                  <StackedColumn data={buildStackColumnData(account.currentYearLedgersByMonth)} height={350} title={`Income vs Expense ${new Date().getFullYear()}`} />
+                </Card>
+              </Col>
+            </Row>
+          </Col>
+        </Row>
+      ))}
+      <Row>
+        <Col md="12">
+          <pre className="text-light bg-dark p-4">
+            {JSON.stringify(user, null, 2)}
+          </pre>
+        </Col>
+      </Row>
+      <Row>
+        <Col md="12">
+          <pre className="text-light bg-dark p-4">
+            {JSON.stringify(me, null, 2)}
+          </pre>
+        </Col>
+      </Row>
+    </Container>
   );
 };
 

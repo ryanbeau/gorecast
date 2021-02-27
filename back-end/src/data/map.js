@@ -37,7 +37,7 @@ const mapLedgersAmountToMetric = (ledgers, metric, from, to, groupByCategory) =>
 
   // count years, months, weeks or days based off 'metric'
   const metricCount = Math.ceil(to.diff(from, unit).toObject()[unit]);
-  const metrics = { from: from, to: to, count: metricCount };
+  const metrics = { from, to, metric, count: metricCount };
 
   const addAmount = (parent, i, amount) => {
     if (Number.isFinite(amount)) {

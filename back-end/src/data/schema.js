@@ -24,6 +24,7 @@ type CategoryAmounts {
 type LedgerRangeMetric {
     from:     Date!
     to:       Date!
+    metric:   GraphMetricType!
     count:    Int!
     expenses: [Float]
     incomes:  [Float]
@@ -32,6 +33,7 @@ type LedgerRangeMetric {
 type LedgerRangeCategoryMetric {
     from:       Date!
     to:         Date!
+    metric:     GraphMetricType!
     count:      Int!
     categories: [CategoryAmounts!]
 }
