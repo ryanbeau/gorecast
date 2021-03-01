@@ -11,8 +11,25 @@ const meGQL = gql`
       memberName
       accounts {
         accountID
+        accountName
         startBalance
-        oneMonthLedgersByDay: sumLedgerRangeByMetric(from: $oneMonthFrom, to: $oneMonthTo, type:[INCOME, EXPENSE], metric: DAILY) {
+        sumBudgetsProgress(type:[INCOME, EXPENSE]) {
+            type
+            budget {
+                ledgerID
+                description
+                amount
+                ledgerFrom
+                ledgerTo
+            }
+            category {
+                categoryID
+                categoryName
+            }
+            expense
+            income
+        }
+        oneMonthLedgersByWeek: sumLedgerRangeByMetric(from: $oneMonthFrom, to: $oneMonthTo, type:[INCOME, EXPENSE], metric: WEEKLY) {
             from
             to
             metric

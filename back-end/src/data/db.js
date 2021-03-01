@@ -154,19 +154,24 @@ const Ledger = sequelize.define('ledger', {
 Account.hasMany(Ledger, { foreignKey: 'accountID', as: 'ledgers' });
 Ledger.belongsTo(Account, { foreignKey: 'accountID' });
 
-Member.hasMany(Ledger, { foreignKey: 'accountID', as: 'ledgers' });
+Member.hasMany(Ledger, { foreignKey: 'memberID', as: 'ledgers' });
 Ledger.belongsTo(Member, { foreignKey: 'memberID' });
 
-Category.hasMany(Ledger, { foreignKey: 'accountID', as: 'ledgers' });
+const CategoryLedgers = Category.hasMany(Ledger, { foreignKey: 'categoryID', as: 'ledgers' });
 Ledger.belongsTo(Category, { foreignKey: 'categoryID' });
 
 sequelize.sync({ alter: true }); // alter: modify columns if missing
 
 module.exports = {
   sequelize,
+
+  // models
   Member,
   Category,
   Account,
   AccountShare,
   Ledger,
+
+  // associations
+  CategoryLedgers,
 }

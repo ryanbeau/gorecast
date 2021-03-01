@@ -2,9 +2,9 @@ var { DateTime } = require('luxon');
 const { GraphQLScalarType } = require("graphql");
 const { makeExecutableSchema } = require('@graphql-tools/schema');
 const { Op } = require('sequelize')
-const { sequelize, Member, Category, Account, AccountShare, Ledger } = require("./db");
+const { sequelize, Member, Category, Account, AccountShare, Ledger, CategoryLedgers } = require("./db");
 const typeDefs = require("./schema");
-const { mapLedgersAmountToMetric } = require("./map")
+const { mapLedgersAmountToMetric, mapLedgerCategoryAmountToMetric, mapBudgetsProgress } = require("./map")
 
 const getContext = (request) => {
   if (!request.user || !request.user['https://gorecast.com/email']) {
@@ -39,16 +39,10 @@ const queryAccountLedgerRange = async (account, from, to, wherePredicates, addit
   });
 }
 
-const queryMapAccountLedgerRangeByMetric = async (account, from, to, type, metric, groupByCategory) => {
+const queryMapAccountLedgerRangeByMetric = async (account, from, to, type, additionalQuery) => {
   if (!type || type.length == 0) {
     return null;
   }
-
-  if (from.valueOf() > to.valueOf()) {
-    to = [from, from = to][0]; //swap dates
-  }
-  from = from.startOf('day');
-  to = to.endOf('day');
 
   const wherePredicates = { isBudget: false, amount: { [Op.ne]: 0 } };
   if (!type.includes("INCOME")) {
@@ -57,10 +51,7 @@ const queryMapAccountLedgerRangeByMetric = async (account, from, to, type, metri
     wherePredicates.amount = { [Op.gt]: 0 }; //income
   }
 
-  const additionalQuery = groupByCategory ? { include: { model: Category } } : {};
-
-  const ledgers = await queryAccountLedgerRange(account, from, to, wherePredicates, additionalQuery);
-  return mapLedgersAmountToMetric(ledgers, metric, from, to, groupByCategory);
+  return await queryAccountLedgerRange(account, from, to, wherePredicates, additionalQuery);
 }
 
 // GraphQL Resolver
@@ -84,13 +75,60 @@ const resolvers = {
 
     async sumLedgerRangeByMetric(account, { from, to, type, metric }) {
       console.log(`get:Account->sumLedgerRangeByMetric(accountID:${account.accountID},from:${from.valueOf()},to:${to.valueOf()},type:${type},metric:${metric})`);
-      return await queryMapAccountLedgerRangeByMetric(account, from, to, type, metric);
+      if (from.valueOf() > to.valueOf()) {
+        to = [from, from = to][0]; //swap dates
+      }
+      const ledgers = await queryMapAccountLedgerRangeByMetric(account, from, to, type);
+      return mapLedgersAmountToMetric(ledgers, metric, from, to);
     },
 
     async sumLedgerRangeCategoryByMetric(account, { from, to, type, metric }) {
-      console.log(`get:Account->sumLedgerRangeByCategory(accountID:${account.accountID},from:${from.valueOf()},to:${to.valueOf()},type:${type})`);
-      return await queryMapAccountLedgerRangeByMetric(account, from, to, type, metric, true);
+      console.log(`get:Account->sumLedgerRangeByCategory(accountID:${account.accountID},from:${from.valueOf()},to:${to.valueOf()},type:${type},metric:${metric})`);
+      if (from.valueOf() > to.valueOf()) {
+        to = [from, from = to][0]; //swap dates
+      }
+      const ledgers = await queryMapAccountLedgerRangeByMetric(account, from, to, type, { include: { model: Category } });
+      return mapLedgerCategoryAmountToMetric(ledgers, metric, from, to);
     },
+
+    async sumBudgetsProgress(account, { type }) {
+      console.log(`get:Account->sumBudgetsProgress(accountID:${account.accountID},type:${type})`);
+      const from = DateTime.utc(2021, 1, 1); // TODO : possibly get date from account instead
+      const to = DateTime.utc(2030, 12, 31);
+      const additionalQuery = {
+        include: { 
+          model: Category,
+          include: {
+            association: CategoryLedgers,
+            required: true,
+            where: {
+              accountID: account.accountID,
+              isBudget: false,
+              [Op.or]: [
+                { ledgerFrom: { [Op.between]: [from.valueOf(), to.valueOf()] } }, // ledgerFrom within dates
+                { ledgerTo: { [Op.between]: [from.valueOf(), to.valueOf()] } },   // ledgerTo within dates
+                { ledgerFrom: { [Op.lte]: to.valueOf() }, ledgerTo: { [Op.gte]: from.valueOf() } }, // completely overlaps from/to
+              ],
+            }
+          }
+        } 
+      };
+
+      if (!type || type.length == 0) {
+        return null;
+      }
+    
+      const wherePredicates = { isBudget: true, amount: { [Op.ne]: 0 } };
+      if (!type.includes("INCOME")) {
+        wherePredicates.amount = { [Op.lt]: 0 }; //expense
+      } else if (!type.includes("EXPENSE")) {
+        wherePredicates.amount = { [Op.gt]: 0 }; //income
+      }
+    
+      const ledgers = await queryAccountLedgerRange(account, from, to, wherePredicates, additionalQuery);
+
+      return mapBudgetsProgress(ledgers);
+    }
   },
 
   AccountShare: {

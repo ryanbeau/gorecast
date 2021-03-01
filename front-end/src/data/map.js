@@ -19,8 +19,8 @@ const metricMap = {
   WEEKLY: { // TODO: Week always starts on Monday with Luxon, we may want to make this user customizable
     unit: 'weeks',
     dataFormat: 'yyyy LLL',
-    xlabelFormat: 'yyyy MMM',
-    xtooltipFormat: 'yyyy MMM',
+    xlabelFormat: 'MMM dd',
+    xtooltipFormat: 'yyyy MMM dd',
   },
   DAILY: {
     unit: 'days',
@@ -28,6 +28,30 @@ const metricMap = {
     xlabelFormat: 'MMM dd',
     xtooltipFormat: 'yyyy MMM dd',
   },
+}
+
+const buildBudgetsData = (raw) => {
+  const budgets = [];
+  for (let i = 0; i < raw.length; i++) {
+    if (raw[i].budget.amount != 0) {
+      const budget = {
+        ledgerID: raw[i].budget.ledgerID,
+        budgetDescription: raw[i].budget.description,
+        categoryID: raw[i].category.categoryID,
+        categoryName: raw[i].category.categoryName,
+        budgetAmount: Math.abs(raw[i].budget.amount),
+      }
+      if (raw[i].type == "EXPENSE") {
+        budget.currentAmount = (Math.abs(raw[i].expense || 0) - (raw[i].income || 0)).toFixed(2);
+      } else {
+        budget.currentAmount = ((raw[i].income || 0) + (raw[i].expense || 0)).toFixed(2);
+      }
+      if (budget.currentAmount > 0) {
+        budgets.push(budget);
+      }
+    }
+  }
+  return budgets;
 }
 
 const buildAreaChartData = (raw) => {
@@ -50,7 +74,7 @@ const buildAreaChartData = (raw) => {
   for (let i = 0; i < raw.count; i++) {
     if (raw.incomes) {
       const value = raw.incomes[i] ?? 0;
-      incomes.data.push({ x: date.valueOf(), y: value });
+        incomes.data.push({ x: date.valueOf(), y: value });
     }
     if (raw.expenses) { // if incomes are null then make expense an abs value
       const value = raw.incomes ? raw.expenses[i] ?? 0 : Math.abs(raw.expenses[i] ?? 0);
@@ -96,7 +120,6 @@ const buildPieChartData = (raw) => {
 }
 
 const buildStackColumnData = (raw) => {
-  console.log(raw);
   const increment = { [metricMap[raw.metric].unit]: 1 };
   const dataset = {
     series: [],
@@ -131,12 +154,12 @@ const buildStackColumnData = (raw) => {
   if (incomes.data.length > 0) {
     dataset.series.push(incomes);
   }
-  console.log(dataset);
   return dataset;
 }
 
 export {
   buildAreaChartData,
+  buildBudgetsData,
   buildPieChartData,
   buildStackColumnData,
 }

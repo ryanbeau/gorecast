@@ -38,6 +38,14 @@ type LedgerRangeCategoryMetric {
     categories: [CategoryAmounts!]
 }
 
+type BudgetProgress {
+    type:     LedgerType!
+    budget:   Ledger!
+    category: Category!
+    expense:  Float
+    income:   Float
+}
+
 type Member {
     memberID:      Int!
     email:         String!
@@ -77,6 +85,10 @@ type Account {
         type:   [LedgerType!]!
         metric: GraphMetricType!
     ): LedgerRangeCategoryMetric
+
+    sumBudgetsProgress(
+        type:   [LedgerType!]
+    ): [BudgetProgress]
 }
 
 type AccountShare {

@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
-import { Area, Donut, StackedColumn } from "../charts";
+import { Area, Budgets, Donut, StackedColumn } from "../charts";
 import { Card, Container, Row, Col } from 'react-bootstrap';
 import "bootstrap/dist/css/bootstrap.min.css";
-const { buildAreaChartData, buildPieChartData, buildStackColumnData, queryMe } = require("../data");
+const { buildAreaChartData, buildBudgetsData, buildPieChartData, buildStackColumnData, queryMe } = require("../data");
 
 const getInitialMe = () => {
   return {
@@ -22,7 +22,6 @@ const Profile = () => {
         queryMe(`Bearer ${token}`)
           .then(result => {
             if (result) {
-              console.warn(result);
               setMe(result);
             }
           })
@@ -48,29 +47,37 @@ const Profile = () => {
         </Col>
       </Row>
       {me.accounts.map((account, index) => (
-        <Row key={index}>
-          <Col>
-            <Row className="mb-3">
-              <Col md="auto" className="d-flex">
-                <Card border="0" className="shadow-sm align-self-stretch">
-                  <Area data={buildAreaChartData(account.oneMonthLedgersByDay)} width={380} height={246} title={'Past Month'} />
-                </Card>
-              </Col>
-              <Col md="auto" className="d-flex">
-                <Card border="0" className="shadow-sm align-self-stretch">
-                  <Donut data={buildPieChartData(account.currentYearExpenseByCategory)} width={380} height={246} title={'Monthly Expenses'} />
-                </Card>
-              </Col>
-            </Row>
-            <Row className="mb-3">
-              <Col>
-                <Card border="0"  className="shadow-sm">
-                  <StackedColumn data={buildStackColumnData(account.currentYearLedgersByMonth)} height={350} title={`Income vs Expense ${new Date().getFullYear()}`} />
-                </Card>
-              </Col>
-            </Row>
-          </Col>
-        </Row>
+        <div key={account.accountID}>
+          <h3 class="overview-account-title">{account.accountName || `Account ${index + 1}`}</h3>
+          <Row>
+            <Col>
+              <Row>
+                <Col xl={6} className="d-flex mb-3">
+                  <Card border="0" className="shadow-sm w-100">
+                    <Area data={buildAreaChartData(account.oneMonthLedgersByWeek)} height={246} title={'Past Month'} />
+                  </Card>
+                </Col>
+                <Col sm={6} xl={3} className="d-flex mb-3">
+                  <Card border="0" className="shadow-sm w-100">
+                    <Donut data={buildPieChartData(account.currentYearExpenseByCategory)} height={246} labelTotal={`Expense Total`} title={'Monthly Expenses'} />
+                  </Card>
+                </Col>
+                <Col sm={6} xl={3} className="d-flex mb-3">
+                  <Card border="0" className="shadow-sm w-100">
+                    <Budgets data={buildBudgetsData(account.sumBudgetsProgress)} width={247} height={246} />
+                  </Card>
+                </Col>
+              </Row>
+              <Row>
+                <Col className="mb-3">
+                  <Card border="0" className="shadow-sm">
+                    <StackedColumn data={buildStackColumnData(account.currentYearLedgersByMonth)} height={350} title={`Income and Expenses ${new Date().getFullYear()}`} />
+                  </Card>
+                </Col>
+              </Row>
+            </Col>
+          </Row>
+        </div>
       ))}
       <Row>
         <Col md="12">
