@@ -12,9 +12,6 @@ const Area = ({ data, width, height, title }) => {
     dataLabels: {
       enabled: false
     },
-    stroke: {
-      curve: 'straight'
-    },
     title: {
       text: title,
       align: 'left',
@@ -47,6 +44,9 @@ const Area = ({ data, width, height, title }) => {
       axisTicks: {
         show: false
       }
+    },
+    stroke: {
+      curve: 'smooth'
     },
     theme: {
       mode: 'light',

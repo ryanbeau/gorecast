@@ -1,7 +1,7 @@
 import React from "react";
 import ReactApexChart from 'react-apexcharts';
 
-const Donut = ({ data, width, height, title }) => {
+const Donut = ({ data, width, height, title, labelTotal }) => {
   const options = {
     chart: {
       type: 'donut',
@@ -19,28 +19,36 @@ const Donut = ({ data, width, height, title }) => {
             show: true,
             total: {
               show: true,
-              showAlways: true,
-            }
+              label: labelTotal ?? 'Total',
+            },
           },
-        }
+          size: '75%',
+        },
+        size: 200,
       }
     },
     dataLabels: {
       enabled: false
     },
+    legend: {
+      show: false,
+    },
     labels: data?.labels ?? [],
     title: {
       text: title
     },
+    tooltip: {
+      enabled: false,
+    },
     theme: {
       mode: 'light',
-      palette: 'palette4'
+      palette: 'palette1'
     },
     responsive: [{
-      breakpoint: width || 380,
+      breakpoint: width,
       options: {
         chart: {
-          width: 200
+          width: width
         },
         legend: {
           position: 'bottom'

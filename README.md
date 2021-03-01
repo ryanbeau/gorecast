@@ -97,6 +97,22 @@ If these default values require change for local deployment, add them to the `.e
             accountID
             accountName
             startBalance
+            sumBudgetsProgress(type:[INCOME, EXPENSE]) {
+                type
+                budget {
+                    ledgerID
+                    description
+                    amount
+                    ledgerFrom
+                    ledgerTo
+                }
+                category {
+                    categoryID
+                    categoryName
+                }
+                expense
+                income
+            }
             yearlyLedgersByMonth: sumLedgerRangeByMetric(from: $from, to: $to, type:[INCOME, EXPENSE], metric: MONTHLY) {
                 from
                 to
