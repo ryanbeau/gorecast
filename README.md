@@ -4,7 +4,7 @@ This repository contains a React front-end and a node.js back-end that defines a
 
 ## Requirements
 
-* Node ([download]("https://nodejs.org/en/"))
+* Node 14 or higher ([download]("https://nodejs.org/en/"))
 
 ## Get Started
 
