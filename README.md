@@ -224,8 +224,8 @@ mutation addAccountShare($accountID: Int!, $memberID: Int!) {
 
 ### POST: Add Ledger
 ```graphql
-mutation addLedger($accountID: Int!, $memberID: Int!, $categoryID: Int!, $amount: Float!, $description: String, $ledgerFrom: Date!, $ledgerTo: Date!) {
-    addLedger(accountID: $accountID, memberID: $memberID, categoryID: $categoryID, amount: $amount, description: $description, ledgerFrom: $ledgerFrom, ledgerTo: $ledgerTo) {
+mutation addLedger($accountID: Int!, $memberID: Int!, $categoryID: Int!, $amount: Float!, $isBudget: Boolean!, $description: String, $ledgerFrom: Date!, $ledgerTo: Date!) {
+    addLedger(accountID: $accountID, memberID: $memberID, categoryID: $categoryID, amount: $amount, isBudget: $isBudget, description: $description, ledgerFrom: $ledgerFrom, ledgerTo: $ledgerTo) {
         ledgerID
         accountID
         memberID
