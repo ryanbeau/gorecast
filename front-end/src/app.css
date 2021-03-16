@@ -86,3 +86,8 @@ body {
 .result-block-container .result-block {
   opacity: 1;
 }
+
+.date-range-container {
+  display: flex;
+  justify-content: center;
+}

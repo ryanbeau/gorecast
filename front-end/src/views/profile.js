@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import { Area, Budgets, Donut, StackedColumn } from "../charts";
 import { Card, Container, Row, Col } from 'react-bootstrap';
+import AddLedgerButton from "../components/add-ledger-button"
 import "bootstrap/dist/css/bootstrap.min.css";
 const { buildAreaChartData, buildBudgetsData, buildPieChartData, buildStackColumnData, queryMe } = require("../data");
 
@@ -26,7 +27,7 @@ const Profile = () => {
             }
           })
           .catch(error => {
-            // TODO : do something with this
+            // TODO: do something with this
           });
       });
   }, [user, getAccessTokenSilently])
@@ -48,7 +49,7 @@ const Profile = () => {
       </Row>
       {me.accounts.map((account, index) => (
         <div key={account.accountID}>
-          <h3 class="overview-account-title">{account.accountName || `Account ${index + 1}`}</h3>
+          <h3 className="overview-account-title">{account.accountName || `Account ${index + 1}`}</h3>
           <Row>
             <Col>
               <Row>
@@ -79,6 +80,11 @@ const Profile = () => {
           </Row>
         </div>
       ))}
+      <Row>
+        <Col className="mb-3" md="12">
+          <AddLedgerButton />
+        </Col>
+      </Row>
       <Row>
         <Col md="12">
           <pre className="text-light bg-dark p-4">
