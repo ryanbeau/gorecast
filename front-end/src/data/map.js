@@ -33,7 +33,7 @@ const metricMap = {
 const buildBudgetsData = (raw) => {
   const budgets = [];
   for (let i = 0; i < raw.length; i++) {
-    if (raw[i].budget.amount != 0) {
+    if (raw[i].budget.amount !== 0) {
       const budget = {
         ledgerID: raw[i].budget.ledgerID,
         budgetDescription: raw[i].budget.description,
@@ -41,7 +41,7 @@ const buildBudgetsData = (raw) => {
         categoryName: raw[i].category.categoryName,
         budgetAmount: Math.abs(raw[i].budget.amount),
       }
-      if (raw[i].type == "EXPENSE") {
+      if (raw[i].type === "EXPENSE") {
         budget.currentAmount = (Math.abs(raw[i].expense || 0) - (raw[i].income || 0)).toFixed(2);
       } else {
         budget.currentAmount = ((raw[i].income || 0) + (raw[i].expense || 0)).toFixed(2);
