@@ -2,9 +2,12 @@ import React, { useEffect, useState } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import { Area, Budgets, Donut, StackedColumn } from "../charts";
 import { Card, Container, Row, Col } from 'react-bootstrap';
-import AddLedgerButton from "../components/add-ledger-button"
+import CategoryInput from "../components/category-input"
+import LedgerInput from "../components/ledger-input"
 import "bootstrap/dist/css/bootstrap.min.css";
 const { buildAreaChartData, buildBudgetsData, buildPieChartData, buildStackColumnData, queryMe } = require("../data");
+
+// TODO: Modal on successful input
 
 const getInitialMe = () => {
   return {
@@ -12,10 +15,12 @@ const getInitialMe = () => {
   }
 }
 
-const Profile = () => {
+const Profile = (props) => {
   const [me, setMe] = useState(getInitialMe());
+  const [userJWT, setUserJWT] = useState();
   const { user, getAccessTokenSilently } = useAuth0();
   const { name, picture, email } = user;
+  const account = me.accounts.filter(account => account.accountName.toUpperCase() === props.match.params.account.toUpperCase());
 
   useEffect(() => {
     getAccessTokenSilently()
@@ -24,6 +29,7 @@ const Profile = () => {
           .then(result => {
             if (result) {
               setMe(result);
+              setUserJWT(token);
             }
           })
           .catch(error => {
@@ -47,7 +53,7 @@ const Profile = () => {
           <p className="lead text-muted">{email}</p>
         </Col>
       </Row>
-      {me.accounts.map((account, index) => (
+      {account.map((account, index) => (
         <div key={account.accountID}>
           <h3 className="overview-account-title">{account.accountName || `Account ${index + 1}`}</h3>
           <Row>
@@ -81,8 +87,13 @@ const Profile = () => {
         </div>
       ))}
       <Row>
-        <Col className="mb-3" md="12">
-          <AddLedgerButton />
+        <Col className="mb-3" md="6">
+          <p>Add category</p>
+          <CategoryInput memberID={me.memberID} token={userJWT} />
+        </Col>
+        <Col className="mb-3" md="6">
+          <p>Add ledger</p>
+          <LedgerInput me={me} token={userJWT} accountID={account[0]?.accountID} />
         </Col>
       </Row>
       <Row>
