@@ -12,14 +12,14 @@ const Budgets = ({ data, width, height }) => {
   return (
     <Row className="content-wrapper pt-0" style={divStyle}>
       <Col>
-        <div class="card-title-text">Budgets</div>
+        <div className="card-title-text">Budgets</div>
         {data.map((budget, index) => (
           <div key={budget.ledgerID}>
-            <div class="d-flex justify-content-between">
-              <div class="budget-progress-title">
+            <div className="d-flex justify-content-between">
+              <div className="budget-progress-title">
                 {budget.budgetDescription}
             </div>
-              <div class="budget-progress-percent">
+              <div className="budget-progress-percent">
               {budget.currentAmount}
             </div>
             </div>
