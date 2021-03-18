@@ -7,7 +7,7 @@ import LedgerInput from "../components/ledger-input"
 import "bootstrap/dist/css/bootstrap.min.css";
 const { buildAreaChartData, buildBudgetsData, buildPieChartData, buildStackColumnData, queryMe } = require("../data");
 
-// TODO: Modal on successful input
+// TODO: Update after form input
 
 const getInitialMe = () => {
   return {
