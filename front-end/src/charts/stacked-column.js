@@ -47,6 +47,7 @@ const StackedColumn = ({ data, width, height, title }) => {
       labels: {
         format: data?.xlabelFormat,
       },
+      categories: data.categories,
     },
     tooltip: {
       x: {
