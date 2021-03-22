@@ -70,7 +70,13 @@ const resolvers = {
 
     async ledgers(account) {
       console.log(`get:Account->ledgers(memberID:${account.memberID})`);
-      return await Ledger.findAll({ where: { memberID: account.memberID } });
+      return await Ledger.findAll({ 
+        where: { memberID: account.memberID },
+        order: [
+          ['ledgerFrom', 'DESC'],
+          ['ledgerTo', 'DESC'],
+        ]
+      });
     },
 
     async sumLedgerRangeByMetric(account, { from, to, type, metric }) {
