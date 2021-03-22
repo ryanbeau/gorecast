@@ -1,7 +1,8 @@
 import queryMe from "./query";
-import { buildAreaChartData, buildPieChartData, buildStackColumnData, buildBudgetsData } from "./map";
+import { buildLedgersData, buildAreaChartData, buildPieChartData, buildStackColumnData, buildBudgetsData } from "./map";
 
 export {
+    buildLedgersData,
     buildAreaChartData,
     buildBudgetsData,
     buildPieChartData,

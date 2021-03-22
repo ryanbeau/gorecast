@@ -30,6 +30,24 @@ const metricMap = {
   },
 }
 
+const buildLedgersData = (account) => {
+  console.log(account);
+  const ledgers = [];
+  const len = account?.ledgers?.length ?? 0;
+  for (let i = 0; i < len; i++) {
+    const ledger = {
+      from: DateTime.fromMillis(account.ledgers[i].ledgerFrom).toISODate(),
+      to: DateTime.fromMillis(account.ledgers[i].ledgerTo).toISODate(),
+      description: account.ledgers[i].description,
+      category: account.ledgers[i].category.categoryName,
+      amount: account.ledgers[i].amount,
+    }
+    ledgers.push(ledger);
+  }
+  console.log(ledgers);
+  return ledgers;
+}
+
 const buildBudgetsData = (raw) => {
   const budgets = [];
   for (let i = 0; i < raw.length; i++) {
@@ -161,6 +179,7 @@ const buildStackColumnData = (raw) => {
 }
 
 export {
+  buildLedgersData,
   buildAreaChartData,
   buildBudgetsData,
   buildPieChartData,

@@ -42,12 +42,12 @@ const MainNav = () => {
       </NavLink>
       <NavDropdown title="Accounts" className="nav-dropdown">
         {me.accounts.map((account, index) => (
-          <>
+          <div key={index}>
             <NavLink to={`/profile/${account.accountName}`} exact className="nav-link">
               {account.accountName}
             </NavLink>
             <NavDropdown.Divider />
-          </>
+          </div>
         ))}
       </NavDropdown>
       <NavLink
