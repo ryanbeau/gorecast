@@ -4,8 +4,9 @@ import { Area, Budgets, Donut, StackedColumn } from "../charts";
 import { Card, Container, Row, Col } from 'react-bootstrap';
 import CategoryInput from "../components/category-input"
 import LedgerInput from "../components/ledger-input"
+import LedgerTable from "../components/ledger-table"
 import "bootstrap/dist/css/bootstrap.min.css";
-const { buildAreaChartData, buildBudgetsData, buildPieChartData, buildStackColumnData, queryMe } = require("../data");
+const { buildLedgersData, buildAreaChartData, buildBudgetsData, buildPieChartData, buildStackColumnData, queryMe } = require("../data");
 
 // TODO: Update after form input
 
@@ -84,18 +85,23 @@ const Profile = (props) => {
               </Row>
             </Col>
           </Row>
+          <Row>
+            <Col className="mb-3" md="6">
+              <p>Add category</p>
+              <CategoryInput memberID={me.memberID} token={userJWT} />
+            </Col>
+            <Col className="mb-3" md="6">
+              <p>Add ledger</p>
+              <LedgerInput me={me} token={userJWT} accountID={account?.accountID} />
+            </Col>
+          </Row>
+          <Row>
+            <Col>
+              <LedgerTable data={buildLedgersData(account)} />
+            </Col>
+          </Row>
         </div>
       ))}
-      <Row>
-        <Col className="mb-3" md="6">
-          <p>Add category</p>
-          <CategoryInput memberID={me.memberID} token={userJWT} />
-        </Col>
-        <Col className="mb-3" md="6">
-          <p>Add ledger</p>
-          <LedgerInput me={me} token={userJWT} accountID={account[0]?.accountID} />
-        </Col>
-      </Row>
       <Row>
         <Col md="12">
           <pre className="text-light bg-dark p-4">

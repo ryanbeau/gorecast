@@ -30,6 +30,24 @@ const metricMap = {
   },
 }
 
+const buildLedgersData = (account) => {
+  console.log(account);
+  const ledgers = [];
+  const len = account?.ledgers?.length ?? 0;
+  for (let i = 0; i < len; i++) {
+    const ledger = {
+      from: DateTime.fromMillis(account.ledgers[i].ledgerFrom).toISODate(),
+      to: DateTime.fromMillis(account.ledgers[i].ledgerTo).toISODate(),
+      description: account.ledgers[i].description,
+      category: account.ledgers[i].category.categoryName,
+      amount: account.ledgers[i].amount,
+    }
+    ledgers.push(ledger);
+  }
+  console.log(ledgers);
+  return ledgers;
+}
+
 const buildBudgetsData = (raw) => {
   const budgets = [];
   for (let i = 0; i < raw.length; i++) {
@@ -122,6 +140,7 @@ const buildPieChartData = (raw) => {
 const buildStackColumnData = (raw) => {
   const increment = { [metricMap[raw.metric].unit]: 1 };
   const dataset = {
+    categories: [],
     series: [],
     xtype: 'datetime',
     xlabelFormat: metricMap[raw.metric].xlabelFormat,
@@ -139,12 +158,14 @@ const buildStackColumnData = (raw) => {
   for (let i = 0; i < raw.count; i++) {
     if (raw.incomes) {
       const value = raw.incomes[i] ?? 0;
-      incomes.data.push({ x: date.toFormat(metricMap[raw.metric].dataFormat), y: value });
+      incomes.data.push(value);
     }
     if (raw.expenses) {
       const value = raw.incomes ? raw.expenses[i] ?? 0 : Math.abs(raw.expenses[i] ?? 0); // abs if no income in data
-      expenses.data.push({ x: date.toFormat(metricMap[raw.metric].dataFormat), y: value });
+      expenses.data.push(value);
     }
+    dataset.categories.push(date.valueOf());
+
     date = date.plus(increment);
   }
 
@@ -158,6 +179,7 @@ const buildStackColumnData = (raw) => {
 }
 
 export {
+  buildLedgersData,
   buildAreaChartData,
   buildBudgetsData,
   buildPieChartData,

@@ -20,6 +20,11 @@ const Donut = ({ data, width, height, title, labelTotal }) => {
             total: {
               show: true,
               label: labelTotal ?? 'Total',
+              formatter: function (w) {
+                return w.globals.seriesTotals.reduce((a, b) => {
+                  return a + b
+                }, 0).toFixed(2)
+              },
             },
           },
           size: '75%',

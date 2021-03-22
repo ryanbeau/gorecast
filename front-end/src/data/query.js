@@ -67,6 +67,9 @@ const meGQL = gql`
           description
           ledgerFrom
           ledgerTo
+          category {
+            categoryName
+          }
         }
       }
       accountShares {

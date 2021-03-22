@@ -227,11 +227,12 @@ const resolvers = {
       return accountShare;
     },
 
-    async addLedger(_, { accountID, memberID, categoryID, amount, description, ledgerFrom, ledgerTo }) {
+    async addLedger(_, { accountID, memberID, categoryID, amount, isBudget, description, ledgerFrom, ledgerTo }) {
       const ledger = await Ledger.create({
         accountID, memberID, categoryID, amount, description,
         ledgerFrom: ledgerFrom,
-        ledgerTo: ledgerTo || ledgerFrom
+        ledgerTo: ledgerTo || ledgerFrom,
+        isBudget: isBudget ?? false,
       });
       return ledger;
     },
