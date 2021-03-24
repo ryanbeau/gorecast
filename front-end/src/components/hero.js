@@ -6,8 +6,8 @@ const Hero = () => (
   <div className="text-center hero" style={{
     backgroundImage: `url(${herobg})`,
     height: '50vh',
-    //width: '100%',
-    //maxWidth: '100%',
+    width: '100%',
+    maxWidth: '100%',
     backgroundPosition: 'center',
     backgroundSize: 'cover',
     backgroundRepeat: 'no-repeat',
