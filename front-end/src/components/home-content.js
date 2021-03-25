@@ -1,10 +1,25 @@
 import React from "react";
+import hcbg from "../images/stock-market-display.jpg";
 
 const HomeContent = () => (
-  <div className="next-steps">
-    <h2 className="my-5 text-center">What can I do in Gorecast?</h2>
+  <div className="next-steps" style={{
+    backgroundImage: `url(${hcbg})`,
+    height: '60vh',
+    //maxHeight: '100%',
+    //maxWidth: '100%',
+    backgroundPosition: 'center',
+    backgroundSize: 'cover',
+    backgroundRepeat: 'no-repeat',
+    opacity: '0.9',
+    color: 'whitesmoke',
+    textShadow: '1px 1px black',
+    margin: 'auto'
+  }}>
+    <h2 className="text-center" style={{
+      paddingTop: '10vh'
+    }}>What can I do in Gorecast?</h2>
 
-    <div className="row">
+    <div className="row" style={{padding: '0 10vw 0 10vw'}}>
       <div className="col-md-5 mb-4">
         <h6 className="mb-3">
           <a
@@ -46,7 +61,7 @@ const HomeContent = () => (
       </div>
     </div>
 
-    <div className="row">
+    <div className="row" style={{padding: '0 10vw 0 10vw'}}>
       <div className="col-md-5 mb-4">
         <h6 className="mb-3">
           <a
