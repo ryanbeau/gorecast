@@ -131,12 +131,10 @@ type Mutation {
     ): Member!
 
     addCategory(
-        memberID:     Int!
         categoryName: String!
     ): Category!
 
     addAccount(
-        memberID:     Int!
         accountName:  String!
         startBalance: Float
     ): Account!
@@ -148,7 +146,6 @@ type Mutation {
 
     addLedger(
         accountID:   Int!
-        memberID:    Int!
         categoryID:  Int!
         amount:      Float!
         isBudget:    Boolean!
