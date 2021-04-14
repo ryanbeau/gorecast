@@ -40,7 +40,12 @@ const Profile = (props) => {
   }, [user, getAccessTokenSilently])
 
   return (
-    <Container>
+    <Container style={{ 
+      maxWidth: "1200px",
+      backgroundColor: "#f4f5f9",
+      margin: "auto",
+      padding: "10px"
+      }}>
       <Row className="align-items-center profile-header">
         <Col md="2" className="mb-3">
           <img
