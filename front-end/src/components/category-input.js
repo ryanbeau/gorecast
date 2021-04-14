@@ -1,9 +1,9 @@
-import axios from "axios";
 import { Formik } from "formik";
 import React, { useState } from "react";
 import { Button, Form } from "react-bootstrap";
 import * as yup from "yup";
 import Success from "./success";
+const { mutationAddCategory } = require("../data");
 
 const reqdFieldMsg = "This is a required field";
 const schema = yup.object({
@@ -11,37 +11,16 @@ const schema = yup.object({
 });
 
 const CategoryInput = ({ memberID, token }) => {
-  const serverUrl = process.env.REACT_APP_SERVER_URL;
   const [show, setShow] = useState(false);
   const showModal = () => {
     setShow(true);
   };
 
   const onSubmit = (values) => {
-    const body = {
-      query: `
-        mutation addCategory($memberID: Int!, $categoryName: String!) {
-            addCategory(memberID: $memberID, categoryName: $categoryName) {
-                categoryID
-                memberID
-                categoryName
-            }
-        }
-      `,
-      variables: {
-        memberID: memberID,
-        categoryName: `${values.name}`,
-      },
-    };
 
-    axios
-      .post(`${serverUrl}/api/graphql`, body, {
-        headers: {
-          Authorization: "Bearer " + token,
-        },
-      })
-      .then((res) => {
-        console.log(res.data);
+    mutationAddCategory(`Bearer ${token}`, values.name)
+      .then((result) => {
+        // TODO: refresh Profile (query Me)
       })
       .catch((err) => {
         console.log(err.message);

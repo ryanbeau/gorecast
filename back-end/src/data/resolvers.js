@@ -218,13 +218,15 @@ const resolvers = {
       return member;
     },
 
-    async addCategory(_, { memberID, categoryName }) {
-      const category = await Category.create({ memberID, categoryName });
+    async addCategory(_, { categoryName }, context) {
+      const me = await context.getUser();
+      const category = await Category.create({ memberID: me.memberID, categoryName });
       return category;
     },
 
-    async addAccount(_, { memberID, accountName, startBalance }) {
-      const account = await Account.create({ memberID, accountName, startBalance });
+    async addAccount(_, { accountName, startBalance }, context) {
+      const me = await context.getUser();
+      const account = await Account.create({ memberID: me.memberID, accountName, startBalance });
       return account;
     },
 
@@ -233,9 +235,11 @@ const resolvers = {
       return accountShare;
     },
 
-    async addLedger(_, { accountID, memberID, categoryID, amount, isBudget, description, ledgerFrom, ledgerTo }) {
+    async addLedger(_, { accountID, categoryID, amount, isBudget, description, ledgerFrom, ledgerTo }, context) {
+      const me = await context.getUser();
       const ledger = await Ledger.create({
-        accountID, memberID, categoryID, amount, description,
+        accountID, categoryID, amount, description,
+        memberID: me.memberID,
         ledgerFrom: ledgerFrom,
         ledgerTo: ledgerTo || ledgerFrom,
         isBudget: isBudget ?? false,
