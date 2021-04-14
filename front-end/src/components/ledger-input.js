@@ -1,4 +1,3 @@
-import axios from "axios";
 import { Formik } from "formik";
 import React, { useState } from "react";
 import { Button, Form } from "react-bootstrap";
@@ -6,6 +5,7 @@ import { DateRange } from "react-date-range";
 import * as yup from "yup";
 import Success from "./success";
 var { DateTime } = require("luxon");
+const { mutationAddLedger } = require("../data");
 
 const reqdFieldMsg = "This is a required field";
 const schema = yup.object({
@@ -20,51 +20,13 @@ const LedgerInput = ({me, token, accountID}) => {
     setShow(true);
   };
 
-  const serverUrl = process.env.REACT_APP_SERVER_URL;
-
   const onSubmit = (values) => {
-    const startDate = DateTime.fromJSDate(range[0].startDate);
-    const endDate = DateTime.fromJSDate(range[0].endDate);
+    const startDate = DateTime.fromJSDate(range[0].startDate).toMillis();
+    const endDate = DateTime.fromJSDate(range[0].endDate).toMillis();
 
-    const startAsMillis = DateTime.fromISO(startDate).toMillis();
-    const endAsMillis = DateTime.fromISO(endDate).toMillis();
-
-    const body = {
-      query: `
-        mutation addLedger($accountID: Int!, $memberID: Int!, $categoryID: Int!, $amount: Float!, $isBudget: Boolean!, $description: String, $ledgerFrom: Date!, $ledgerTo: Date!) {
-          addLedger(accountID: $accountID, memberID: $memberID, categoryID: $categoryID, amount: $amount, isBudget: $isBudget, description: $description, ledgerFrom: $ledgerFrom, ledgerTo: $ledgerTo) {
-              ledgerID
-              accountID
-              memberID
-              categoryID
-              amount
-              isBudget
-              description
-              ledgerFrom
-              ledgerTo
-          }
-        }
-      `,
-      variables: {
-        accountID: accountID,
-        memberID: me.memberID,
-        categoryID: parseInt(values.category),
-        amount: parseFloat(values.amount),
-        isBudget: false,
-        description: `${values.description}`,
-        ledgerFrom: startAsMillis,
-        ledgerTo: endAsMillis,
-      },
-    };
-
-    axios
-      .post(`${serverUrl}/api/graphql`, body, {
-        headers: {
-          Authorization: "Bearer " + token,
-        },
-      })
-      .then((res) => {
-        console.log(res.data);
+    mutationAddLedger(`Bearer ${token}`, accountID, parseInt(values.category), parseFloat(values.amount), false, `${values.description}`, startDate, endDate)
+      .then((result) => {
+        // TODO: refresh Profile (query Me)
       })
       .catch((err) => {
         console.log(err.message);
