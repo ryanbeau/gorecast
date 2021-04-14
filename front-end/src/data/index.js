@@ -1,5 +1,5 @@
 import queryMe from "./query";
-import { mutationAddCategory, mutationAddLedger } from "./mutation";
+import { mutationAddAccount, mutationAddCategory, mutationAddLedger } from "./mutation";
 import { buildLedgersData, buildAreaChartData, buildPieChartData, buildStackColumnData, buildBudgetsData } from "./map";
 
 export {
@@ -9,6 +9,7 @@ export {
     buildPieChartData,
     buildStackColumnData,
     queryMe,
+    mutationAddAccount,
     mutationAddCategory,
     mutationAddLedger,
 }

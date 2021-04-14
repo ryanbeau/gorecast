@@ -2,6 +2,17 @@ import { GraphQLClient, gql } from 'graphql-request'
 
 const client = new GraphQLClient(`${process.env.REACT_APP_SERVER_URL}/api/graphql`);
 
+const addAccountGQL = gql`
+  mutation addAccount($accountName: String!, $startBalance: Float) {
+    addAccount(accountName: $accountName, startBalance: $startBalance) {
+        accountID
+        memberID
+        accountName
+        startBalance
+    }
+  }
+`;
+
 const addCategoryGQL = gql`
   mutation addCategory($categoryName: String!) {
     addCategory(categoryName: $categoryName) {
@@ -27,6 +38,20 @@ const addLedgerGQL = gql`
     }
   }
 `;
+
+async function mutationAddAccount(authorization, accountName, startBalance) {
+  console.log(`ADD ACCOUNT ${accountName}, ${startBalance ?? 0}`);
+  try {
+    return await client.request(addAccountGQL, {
+      accountName,
+      startBalance: startBalance ?? 0,
+    },
+      { authorization });
+  } catch (err) {
+    console.log(err);
+    throw new Error(err.message);
+  }
+}
 
 async function mutationAddCategory(authorization, categoryName) {
   console.log(`ADD CATEGORY ${categoryName}`);
@@ -61,6 +86,7 @@ async function mutationAddLedger(authorization, accountID, categoryID, amount, i
 }
 
 export {
+  mutationAddAccount,
   mutationAddCategory,
   mutationAddLedger,
 }
