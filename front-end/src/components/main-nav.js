@@ -17,17 +17,21 @@ const MainNav = () => {
   const { user, getAccessTokenSilently } = useAuth0();
 
   useEffect(() => {
-    getAccessTokenSilently().then((token) => {
-      queryMe(`Bearer ${token}`)
-        .then((result) => {
-          if (result) {
-            setMe(result);
-          }
-        })
-        .catch((error) => {
-          // TODO: do something with this
-        });
-    });
+    getAccessTokenSilently()
+      .then((token) => {
+        queryMe(`Bearer ${token}`)
+          .then((result) => {
+            if (result) {
+              setMe(result);
+            }
+          })
+          .catch((error) => {
+            // TODO: do something with this
+          });
+      })
+      .catch(ex => {
+        // user is not logged in - no accounts to display
+      });
   }, [user, getAccessTokenSilently]);
 
   return (
