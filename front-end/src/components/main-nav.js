@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { NavDropdown } from "react-bootstrap";
 import { NavLink } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
+import { Container } from "../container/container";
 const { queryMe } = require("../data");
 
 // TODO: Why the hell does refreshing make the nav logo disappear? Has I ever??
@@ -15,6 +16,12 @@ const getInitialMe = () => {
 const MainNav = () => {
   const [me, setMe] = useState(getInitialMe());
   const { user, getAccessTokenSilently } = useAuth0();
+
+  const addAccountText = 'Add Account';
+  const onSubmit = (event) => {
+    event.preventDefault(event);
+    // TODO: event targets goes here
+  }
 
   useEffect(() => {
     getAccessTokenSilently()
@@ -51,8 +58,10 @@ const MainNav = () => {
               {account.accountName}
             </NavLink>
             <NavDropdown.Divider />
+            
           </div>
         ))}
+        <Container triggerText={addAccountText} onSubmit={onSubmit}/>
       </NavDropdown>
       <NavLink
         to="/external-api"
