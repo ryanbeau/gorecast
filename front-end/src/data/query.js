@@ -82,6 +82,37 @@ const meGQL = gql`
     }
   }`
 
+const categoryGQL = gql`
+  query Category($categoryName: String!, $ledgerRangeFrom: Date!, $ledgerRangeTo: Date!) {
+    categoryByName(categoryName: $categoryName) {
+      categoryID
+      categoryName
+      ledgers {
+        ledgerID
+        accountID
+        categoryID
+        amount
+        isBudget
+        description
+        ledgerFrom
+        ledgerTo
+        account {
+          accountID
+          accountName
+          startBalance
+        }
+      }
+      sumLedgerRangeByMetric(from: $ledgerRangeFrom, to: $ledgerRangeTo, type:[INCOME, EXPENSE], metric: DAILY) {
+        from
+        to
+        metric
+        count
+        incomes
+        expenses
+      }
+    }
+  }`
+
 const categoriesGQL = gql`
   query Categories {
     categories {
@@ -139,7 +170,29 @@ async function queryCategories(authorization) {
   }
 }
 
+async function queryCategory(authorization, categoryName, from, to) {
+  console.log(`queryCategory: ${categoryName} ${from} ${to}`)
+  const now = DateTime.utc();
+
+  // default: from 1 month ago to now
+  if (!to) to = now.endOf('day');
+  if (!from) from = now.minus({ months: 1 }).startOf('day');
+
+  try {
+    const result = await client.request(categoryGQL, {
+      categoryName,
+      ledgerRangeFrom: from.valueOf(),
+      ledgerRangeTo: to.valueOf(),
+    }, { authorization });
+    return result.categoryByName;
+  } catch (err) {
+    console.log(err);
+    throw new Error(err.message);
+  }
+}
+
 export {
   queryMe,
+  queryCategory,
   queryCategories,
 }
