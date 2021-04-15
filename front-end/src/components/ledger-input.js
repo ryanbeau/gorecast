@@ -26,7 +26,7 @@ const LedgerInput = ({me, token, accountID}) => {
 
     mutationAddLedger(`Bearer ${token}`, accountID, parseInt(values.category), parseFloat(values.amount), false, `${values.description}`, startDate, endDate)
       .then((result) => {
-        // TODO: refresh Profile (query Me)
+        // TODO: refresh Account (query Me)
       })
       .catch((err) => {
         console.log(err.message);

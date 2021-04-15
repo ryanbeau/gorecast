@@ -54,11 +54,10 @@ const MainNav = () => {
       <NavDropdown title="Accounts" className="nav-dropdown">
         {me.accounts.map((account, index) => (
           <div key={index}>
-            <NavLink to={`/profile/${account.accountName}`} exact className="nav-link">
+            <NavLink to={`/account/${account.accountName}`} exact className="nav-link">
               {account.accountName}
             </NavLink>
             <NavDropdown.Divider />
-            
           </div>
         ))}
         <Container triggerText={addAccountText} onSubmit={onSubmit}/>

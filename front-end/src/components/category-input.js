@@ -20,7 +20,7 @@ const CategoryInput = ({ memberID, token }) => {
 
     mutationAddCategory(`Bearer ${token}`, values.name)
       .then((result) => {
-        // TODO: refresh Profile (query Me)
+        // TODO: refresh Account (query Me)
       })
       .catch((err) => {
         console.log(err.message);

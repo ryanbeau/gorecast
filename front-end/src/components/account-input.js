@@ -32,7 +32,7 @@ const AccountInput = () => {
 
     mutationAddAccount(`Bearer ${userJWT}`, values.accountName, parseFloat(values.startBalance))
       .then((result) => {
-        // TODO: refresh Profile (query Me)
+        // TODO: refresh Account (query Me)
       })
       .catch((err) => {
         console.log(err.message);

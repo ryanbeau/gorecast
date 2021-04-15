@@ -1,4 +1,5 @@
 import React from 'react';
+import { NavLink } from "react-router-dom";
 import { makeStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import Table from '@material-ui/core/Table';
@@ -65,7 +66,7 @@ export default function LedgerTable({data}) {
 
   return (
     <Paper className={classes.root}>
-      <TableContainer className={classes.container}>
+      <TableContainer>
         <Table stickyHeader aria-label="sticky table">
           <TableHead>
             <TableRow>
@@ -86,6 +87,15 @@ export default function LedgerTable({data}) {
                 <TableRow hover role="checkbox" tabIndex={-1} key={index}>
                   {columns.map((column) => {
                     const value = row[column.id];
+                    if (column.id === "category") {
+                      return (
+                        <TableCell key={column.id} align={column.align}>
+                          <NavLink to={`/category/${value}`} exact>
+                            {value}
+                          </NavLink>
+                        </TableCell>
+                      );
+                    }
                     return (
                       <TableCell key={column.id} align={column.align}>
                         {column.format && typeof value === 'number' ? column.format(value) : value}
