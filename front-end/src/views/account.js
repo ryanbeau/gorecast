@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import { Area, Budgets, Donut, StackedColumn } from "../charts";
-import { Button, Card, Container, Row, Col } from 'react-bootstrap';
+import { Card, Container, Row, Col } from 'react-bootstrap';
 import CategoryInput from "../components/category-input"
 import LedgerInput from "../components/ledger-input"
 import LedgerTable from "../components/ledger-table"
-import ExampleModal from "../components/example"
 import "bootstrap/dist/css/bootstrap.min.css";
 const { buildLedgersData, buildAreaChartData, buildBudgetsData, buildPieChartData, buildStackColumnData, queryMe } = require("../data");
 
