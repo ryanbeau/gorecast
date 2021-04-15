@@ -1,8 +1,7 @@
 import { Formik } from "formik";
 import React, { useState } from "react";
-import { Button, Form } from "react-bootstrap";
+import { Button, Form, Modal } from "react-bootstrap";
 import * as yup from "yup";
-import Success from "./success";
 const { mutationAddCategory } = require("../data");
 
 const reqdFieldMsg = "This is a required field";
@@ -16,8 +15,10 @@ const CategoryInput = ({ memberID, token }) => {
     setShow(true);
   };
 
-  const onSubmit = (values) => {
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
 
+  const onSubmit = (values) => {
     mutationAddCategory(`Bearer ${token}`, values.name)
       .then((result) => {
         // TODO: refresh Account (query Me)
@@ -31,39 +32,54 @@ const CategoryInput = ({ memberID, token }) => {
 
   return (
     <>
-      <Success show={show} onHide={() => setShow(false)} />
-      <Formik
-        validationSchema={schema}
-        onSubmit={onSubmit}
-        validateOnChange={false}
-        initialValues={{
-          name: "",
-        }}
-      >
-        {({ handleSubmit, handleChange, values, errors }) => {
-          return (
-            <Form id="categoryInput" noValidate onSubmit={handleSubmit}>
-              <Form.Group controlId="categoryFormDescription">
-                <Form.Label>Name</Form.Label>
-                <Form.Control
-                  type="text"
-                  name="name"
-                  placeholder="Please enter a category name"
-                  value={values.name}
-                  onChange={handleChange}
-                  isInvalid={errors.name}
-                />
-                <Form.Control.Feedback type="invalid">
-                  {errors.name}
-                </Form.Control.Feedback>
-              </Form.Group>
-              <Button type="submit" form="categoryInput">
-                Add Item
-              </Button>
-            </Form>
-          );
-        }}
-      </Formik>
+      <Button variant="primary" onClick={handleShow}>
+        Add Category
+      </Button>
+
+      <Modal show={show} onHide={handleClose}>
+        <Modal.Header closeButton>
+          <Modal.Title>Add Category</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Formik
+            validationSchema={schema}
+            onSubmit={onSubmit}
+            validateOnChange={false}
+            initialValues={{
+              name: "",
+            }}
+          >
+            {({ handleSubmit, handleChange, values, errors }) => {
+              return (
+                <Form id="categoryInput" noValidate onSubmit={handleSubmit}>
+                  <Form.Group controlId="categoryFormDescription">
+                    <Form.Label>Name</Form.Label>
+                    <Form.Control
+                      type="text"
+                      name="name"
+                      placeholder="Please enter a category name"
+                      value={values.name}
+                      onChange={handleChange}
+                      isInvalid={errors.name}
+                    />
+                    <Form.Control.Feedback type="invalid">
+                      {errors.name}
+                    </Form.Control.Feedback>
+                  </Form.Group>
+                </Form>
+              );
+            }}
+          </Formik>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleClose}>
+            Close
+          </Button>
+          <Button type="submit" form="categoryInput">
+            Submit
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </>
   );
 };
