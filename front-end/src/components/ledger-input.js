@@ -24,7 +24,7 @@ const LedgerInput = ({me, token, accountID}) => {
     const startDate = DateTime.fromJSDate(range[0].startDate).toMillis();
     const endDate = DateTime.fromJSDate(range[0].endDate).toMillis();
 
-    mutationAddLedger(`Bearer ${token}`, accountID, parseInt(values.category), parseFloat(values.amount), false, `${values.description}`, startDate, endDate)
+    mutationAddLedger(`Bearer ${token}`, accountID, parseInt(values.category), parseFloat(values.amount), values.isBudget, `${values.description}`, startDate, endDate)
       .then((result) => {
         // TODO: refresh Account (query Me)
       })
@@ -53,6 +53,7 @@ const LedgerInput = ({me, token, accountID}) => {
           category: 1,
           description: "",
           amount: "",
+          isBudget: false,
         }}
       >
         {({ handleSubmit, handleChange, values, errors }) => {
@@ -115,6 +116,9 @@ const LedgerInput = ({me, token, accountID}) => {
                     onChange={(item) => setRange([item.selection])}
                   />
                 </div>
+              </Form.Group>
+              <Form.Group controlId="formBasicCheckbox">
+                <Form.Check type="checkbox" name="isBudget" value={values.isBudget} onChange={handleChange} label="This is a budget" />
               </Form.Group>
               <Button type="submit" form="ledgerInput">
                 Add Item
