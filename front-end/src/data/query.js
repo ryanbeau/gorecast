@@ -82,6 +82,29 @@ const meGQL = gql`
     }
   }`
 
+const categoriesGQL = gql`
+  query Categories {
+    categories {
+      categoryID
+      categoryName
+      ledgers {
+        ledgerID
+        accountID
+        categoryID
+        amount
+        isBudget
+        description
+        ledgerFrom
+        ledgerTo
+        account {
+          accountID
+          accountName
+          startBalance
+        }
+      }
+    }
+  }`
+
 async function queryMe(authorization) {
   try {
     console.log(authorization);
@@ -106,4 +129,17 @@ async function queryMe(authorization) {
   }
 }
 
-export default queryMe;
+async function queryCategories(authorization) {
+  try {
+    const result = await client.request(categoriesGQL, {}, { authorization });
+    return result.categories;
+  } catch (err) {
+    console.log(err);
+    throw new Error(err.message);
+  }
+}
+
+export {
+  queryMe,
+  queryCategories,
+}

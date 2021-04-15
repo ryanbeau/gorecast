@@ -48,6 +48,24 @@ const buildLedgersData = (account) => {
   return ledgers;
 }
 
+const buildCategoryLedgersData = (category) => {
+  console.log(category);
+  const ledgers = [];
+  const len = category?.ledgers?.length ?? 0;
+  for (let i = 0; i < len; i++) {
+    const ledger = {
+      from: DateTime.fromMillis(category.ledgers[i].ledgerFrom).toISODate(),
+      to: DateTime.fromMillis(category.ledgers[i].ledgerTo).toISODate(),
+      description: category.ledgers[i].description,
+      account: category.ledgers[i].account.accountName,
+      amount: category.ledgers[i].amount,
+    }
+    ledgers.push(ledger);
+  }
+  console.log(ledgers);
+  return ledgers;
+}
+
 const buildBudgetsData = (raw) => {
   const budgets = [];
   for (let i = 0; i < raw.length; i++) {
@@ -180,6 +198,7 @@ const buildStackColumnData = (raw) => {
 
 export {
   buildLedgersData,
+  buildCategoryLedgersData,
   buildAreaChartData,
   buildBudgetsData,
   buildPieChartData,
