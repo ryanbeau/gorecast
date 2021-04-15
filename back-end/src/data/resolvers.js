@@ -69,9 +69,9 @@ const resolvers = {
     },
 
     async ledgers(account) {
-      console.log(`get:Account->ledgers(memberID:${account.memberID})`);
+      console.log(`get:Account->ledgers(accountID:${account.accountID})`);
       return await Ledger.findAll({ 
-        where: { memberID: account.memberID },
+        where: { accountID: account.accountID },
         order: [
           ['ledgerFrom', 'DESC'],
           ['ledgerTo', 'DESC'],
@@ -154,6 +154,17 @@ const resolvers = {
       console.log(`get:Category->member(memberID:${category.memberID})`);
       return await Member.findOne({ where: { memberID: category.memberID } });
     },
+
+    async ledgers(category) {
+      console.log(`get:Category->ledgers(categoryID:${category.categoryID})`);
+      return await Ledger.findAll({ 
+        where: { categoryID: category.categoryID },
+        order: [
+          ['ledgerFrom', 'DESC'],
+          ['ledgerTo', 'DESC'],
+        ],
+      });
+    },
   },
 
   Ledger: {
@@ -200,6 +211,13 @@ const resolvers = {
     async me(_, args, context) {
       console.log(`get:me()`);
       return await context.getUser();
+    },
+
+    async categories(_, args, context) {
+      console.log(`get:categories()`);
+      const user = await context.getUser();
+      return await Category.findAll({ where: { memberID: user.memberID } });
+      // TODO: if AccountShare is implemented this will need to be modified to grab categories from other users' accounts
     },
 
     async ledgersByAccountIDFromTo(_, { accountID, from, to }, context) {

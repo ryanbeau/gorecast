@@ -11,25 +11,25 @@ import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
 
 const columns = [
-  { 
-    id: 'from', 
-    label: 'From', 
-    minWidth: 170 
+  {
+    id: 'account',
+    label: 'Account',
+    minWidth: 170
   },
-  { 
-    id: 'to', 
-    label: 'To', 
-    minWidth: 170 
+  {
+    id: 'from',
+    label: 'From',
+    minWidth: 170
   },
-  { 
-    id: 'description', 
-    label: 'Description', 
-    minWidth: 170 
+  {
+    id: 'to',
+    label: 'To',
+    minWidth: 170
   },
-  { 
-    id: 'category', 
-    label: 'Category', 
-    minWidth: 170 
+  {
+    id: 'description',
+    label: 'Description',
+    minWidth: 170
   },
   {
     id: 'amount',
@@ -49,7 +49,7 @@ const useStyles = makeStyles({
   },
 });
 
-export default function LedgerTable({data}) {
+export default function CategoryLedgerTable({ data }) {
   const classes = useStyles();
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
@@ -87,10 +87,10 @@ export default function LedgerTable({data}) {
                 <TableRow hover role="checkbox" tabIndex={-1} key={index}>
                   {columns.map((column) => {
                     const value = row[column.id];
-                    if (column.id === "category") {
+                    if (column.id === "account") {
                       return (
                         <TableCell key={column.id} align={column.align}>
-                          <NavLink to={`/category/${value}`} exact>
+                          <NavLink to={`/account/${value}`} exact>
                             {value}
                           </NavLink>
                         </TableCell>

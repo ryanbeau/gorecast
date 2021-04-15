@@ -2,7 +2,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { shallow } from "enzyme";
 import toJson from "enzyme-to-json";
 import React from "react";
-import Profile from "../views/profile.js";
+import Account from "../views/account.js";
 
 // Mock user
 const user = {
@@ -23,7 +23,7 @@ describe("views/profile - logged in", () => {
   });
 
   it("renders correctly", () => {
-    const wrapper = shallow(<Profile />);
+    const wrapper = shallow(<Account />);
   
     expect(toJson(wrapper)).toMatchSnapshot();
   });

@@ -171,8 +171,8 @@ mutation addMember($email: String!, $memberName: String) {
 
 ### POST: Add Category
 ```graphql
-mutation addCategory($memberID: Int!, $categoryName: String!) {
-    addCategory(memberID: $memberID, categoryName: $categoryName) {
+mutation addCategory($categoryName: String!) {
+    addCategory(categoryName: $categoryName) {
         categoryID
         memberID
         categoryName
@@ -188,8 +188,8 @@ mutation addCategory($memberID: Int!, $categoryName: String!) {
 
 ### POST: Add Account
 ```graphql
-mutation addAccount($memberID: Int!, $accountName: String!, $startBalance: Float) {
-    addAccount(memberID: $memberID, accountName: $accountName, startBalance: $startBalance) {
+mutation addAccount($accountName: String!, $startBalance: Float) {
+    addAccount(accountName: $accountName, startBalance: $startBalance) {
         accountID
         memberID
         accountName
@@ -224,8 +224,8 @@ mutation addAccountShare($accountID: Int!, $memberID: Int!) {
 
 ### POST: Add Ledger
 ```graphql
-mutation addLedger($accountID: Int!, $memberID: Int!, $categoryID: Int!, $amount: Float!, $isBudget: Boolean!, $description: String, $ledgerFrom: Date!, $ledgerTo: Date!) {
-    addLedger(accountID: $accountID, memberID: $memberID, categoryID: $categoryID, amount: $amount, isBudget: $isBudget, description: $description, ledgerFrom: $ledgerFrom, ledgerTo: $ledgerTo) {
+mutation addLedger($accountID: Int!, $categoryID: Int!, $amount: Float!, $isBudget: Boolean!, $description: String, $ledgerFrom: Date!, $ledgerTo: Date!) {
+    addLedger(accountID: $accountID, categoryID: $categoryID, amount: $amount, isBudget: $isBudget, description: $description, ledgerFrom: $ledgerFrom, ledgerTo: $ledgerTo) {
         ledgerID
         accountID
         memberID

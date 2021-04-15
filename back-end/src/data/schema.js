@@ -61,6 +61,7 @@ type Category {
     memberID:     Int!
     categoryName: String!
     member:       Member!
+    ledgers:      [Ledger!]
 }
 
 type Account {
@@ -116,6 +117,8 @@ type Ledger {
 
 type Query {
     me: Member
+
+    categories: [Category!]
 
     ledgersByAccountIDFromTo (
         accountID: Int!

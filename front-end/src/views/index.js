@@ -1,5 +1,6 @@
 import ExternalApi from "./external-api";
 import Home from "./home";
-import Profile from "./profile";
+import Account from "./account";
+import Category from "./category";
 
-export { ExternalApi, Home, Profile };
+export { ExternalApi, Home, Account, Category };
