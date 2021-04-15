@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import { Area, Budgets, Donut, StackedColumn } from "../charts";
-import { Card, Container, Row, Col } from 'react-bootstrap';
+import { Button, Card, Container, Row, Col } from 'react-bootstrap';
 import CategoryInput from "../components/category-input"
 import LedgerInput from "../components/ledger-input"
 import LedgerTable from "../components/ledger-table"
+import ExampleModal from "../components/example"
 import "bootstrap/dist/css/bootstrap.min.css";
 const { buildLedgersData, buildAreaChartData, buildBudgetsData, buildPieChartData, buildStackColumnData, queryMe } = require("../data");
 
@@ -90,18 +91,16 @@ const Account = (props) => {
             </Col>
           </Row>
           <Row>
-            <Col className="mb-3" md="6">
-              <p>Add category</p>
-              <CategoryInput memberID={me.memberID} token={userJWT} />
-            </Col>
-            <Col className="mb-3" md="6">
-              <p>Add ledger</p>
-              <LedgerInput me={me} token={userJWT} accountID={account.accountID} />
-            </Col>
-          </Row>
-          <Row>
             <Col>
               <LedgerTable data={buildLedgersData(account)} />
+            </Col>
+          </Row>
+          <Row className="row justify-content-end">
+            <Col md={{ span: 3, offset: 3 }}>
+                <div className="item-inputs">
+                  <CategoryInput memberID={me.memberID} token={userJWT} />
+                  <LedgerInput me={me} token={userJWT} accountID={account.accountID} />
+                </div>
             </Col>
           </Row>
         </>}
