@@ -62,6 +62,13 @@ type Category {
     categoryName: String!
     member:       Member!
     ledgers:      [Ledger!]
+
+    sumLedgerRangeByMetric(
+        from:   Date!
+        to:     Date!
+        type:   [LedgerType!]!
+        metric: GraphMetricType!
+    ): LedgerRangeMetric
 }
 
 type Account {
@@ -119,6 +126,10 @@ type Query {
     me: Member
 
     categories: [Category!]
+
+    categoryByName(
+        categoryName: String!
+    ): Category!
 
     ledgersByAccountIDFromTo (
         accountID: Int!

@@ -1,4 +1,4 @@
-import { queryMe, queryCategories } from "./query";
+import { queryMe, queryCategory, queryCategories } from "./query";
 import { mutationAddAccount, mutationAddCategory, mutationAddLedger } from "./mutation";
 import { buildLedgersData, buildCategoryLedgersData, buildAreaChartData, buildPieChartData, buildStackColumnData, buildBudgetsData } from "./map";
 
@@ -12,6 +12,7 @@ export {
     buildStackColumnData,
     // query
     queryMe,
+    queryCategory,
     queryCategories,
     // mutation
     mutationAddAccount,

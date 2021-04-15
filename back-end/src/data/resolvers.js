@@ -54,6 +54,36 @@ const queryMapAccountLedgerRangeByMetric = async (account, from, to, type, addit
   return await queryAccountLedgerRange(account, from, to, wherePredicates, additionalQuery);
 }
 
+const queryCategoryLedgerRange = async (category, from, to, wherePredicates, additionalQuery) => {
+  return await Ledger.findAll({
+    ...additionalQuery, // prepend additional query statements
+    where: {
+      categoryID: category.categoryID,
+      [Op.or]: [
+        { ledgerFrom: { [Op.between]: [from.valueOf(), to.valueOf()] } }, // ledgerFrom within dates
+        { ledgerTo: { [Op.between]: [from.valueOf(), to.valueOf()] } },   // ledgerTo within dates
+        { ledgerFrom: { [Op.lte]: to.valueOf() }, ledgerTo: { [Op.gte]: from.valueOf() } }, // completely overlaps from/to
+      ],
+      ...wherePredicates, // append or overwrite additional predicates
+    },
+  });
+}
+
+const queryMapCategoryLedgerRangeByMetric = async (category, from, to, type, additionalQuery) => {
+  if (!type || type.length == 0) {
+    return null;
+  }
+
+  const wherePredicates = { isBudget: false, amount: { [Op.ne]: 0 } };
+  if (!type.includes("INCOME")) {
+    wherePredicates.amount = { [Op.lt]: 0 }; //expense
+  } else if (!type.includes("EXPENSE")) {
+    wherePredicates.amount = { [Op.gt]: 0 }; //income
+  }
+
+  return await queryCategoryLedgerRange(category, from, to, wherePredicates, additionalQuery);
+}
+
 // GraphQL Resolver
 const resolvers = {
   // Models
@@ -165,6 +195,15 @@ const resolvers = {
         ],
       });
     },
+
+    async sumLedgerRangeByMetric(category, { from, to, type, metric }) {
+      console.log(`get:Category->sumLedgerRangeByMetric(categoryID:${category.categoryID},from:${from.valueOf()},to:${to.valueOf()},type:${type},metric:${metric})`);
+      if (from.valueOf() > to.valueOf()) {
+        to = [from, from = to][0]; //swap dates
+      }
+      const ledgers = await queryMapCategoryLedgerRangeByMetric(category, from, to, type);
+      return mapLedgersAmountToMetric(ledgers, metric, from, to);
+    },
   },
 
   Ledger: {
@@ -209,19 +248,31 @@ const resolvers = {
   // Queries
   Query: {
     async me(_, args, context) {
-      console.log(`get:me()`);
+      console.log(`query:me()`);
       return await context.getUser();
     },
 
     async categories(_, args, context) {
-      console.log(`get:categories()`);
+      console.log(`query:categories()`);
       const user = await context.getUser();
       return await Category.findAll({ where: { memberID: user.memberID } });
       // TODO: if AccountShare is implemented this will need to be modified to grab categories from other users' accounts
     },
 
+    async categoryByName(_, { categoryName }, context) {
+      console.log(`query:categoryByName(categoryName:${categoryName})`);
+      const user = await context.getUser();
+      return await Category.findOne({
+        where: { 
+          memberID: user.memberID,
+          categoryName,
+        },
+      });
+      // TODO: if AccountShare is implemented this will need to be modified to grab categories from other users' accounts
+    },
+
     async ledgersByAccountIDFromTo(_, { accountID, from, to }, context) {
-      console.log(`get:ledgersByAccountIDFromTo(accountID:${accountID},from:${from},to:${to})`);
+      console.log(`query:ledgersByAccountIDFromTo(accountID:${accountID},from:${from},to:${to})`);
       if (from.valueOf() > to.valueOf()) {
         to = [from, from = to][0]; //swap dates
       }
