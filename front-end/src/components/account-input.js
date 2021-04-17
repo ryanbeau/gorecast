@@ -3,7 +3,6 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { Formik } from "formik";
 import { Button, Form } from "react-bootstrap";
 import * as yup from "yup";
-import Success from "./success";
 const { mutationAddAccount } = require("../data");
 
 
@@ -13,11 +12,7 @@ const schema = yup.object({
   startBalance: yup.number().required(reqdFieldMsg),
 });
 
-const AccountInput = () => {
-  const [show, setShow] = useState(false);
-  const showModal = () => {
-    setShow(true);
-  };
+const AccountInput = (p) => {
   const [userJWT, setUserJWT] = useState();
   const { user, getAccessTokenSilently } = useAuth0();
 
@@ -37,13 +32,12 @@ const AccountInput = () => {
       .catch((err) => {
         console.log(err.message);
       });
-
-    showModal();
+    
+    p.closeModal();
   };
 
   return (
     <>
-      <Success show={show} onHide={() => setShow(false)} />
       <Formik
         validationSchema={schema}
         onSubmit={onSubmit}

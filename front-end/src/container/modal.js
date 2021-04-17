@@ -37,7 +37,7 @@ export const Modal = ({
             </svg>
           </button>
           <div className="modal-body">
-            <AccountInput onSubmit={onSubmit} />
+            <AccountInput onSubmit={onSubmit} closeModal={closeModal} />
           </div>
         </div>
       </aside>
