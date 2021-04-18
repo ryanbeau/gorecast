@@ -1,11 +1,12 @@
-import { queryMe, queryCategory, queryCategories } from "./query";
+import { queryMe, queryCategory, queryCategories, queryBudget } from "./query";
 import { mutationAddAccount, mutationAddCategory, mutationAddLedger } from "./mutation";
-import { buildLedgersData, buildCategoryLedgersData, buildAreaChartData, buildPieChartData, buildStackColumnData, buildBudgetsData } from "./map";
+import { buildLedgersData, buildCategoryLedgersData, buildBudgetLedgersData, buildAreaChartData, buildPieChartData, buildStackColumnData, buildBudgetsData } from "./map";
 
 export {
     // build
     buildLedgersData,
     buildCategoryLedgersData,
+    buildBudgetLedgersData,
     buildAreaChartData,
     buildBudgetsData,
     buildPieChartData,
@@ -14,6 +15,7 @@ export {
     queryMe,
     queryCategory,
     queryCategories,
+    queryBudget,
     // mutation
     mutationAddAccount,
     mutationAddCategory,

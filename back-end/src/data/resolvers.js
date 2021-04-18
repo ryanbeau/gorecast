@@ -221,6 +221,26 @@ const resolvers = {
       console.log(`get:Ledger->member(memberID:${ledger.memberID})`);
       return await Member.findOne({ where: { memberID: ledger.memberID } });
     },
+
+    async ledgersOverlappingByCategoryFromAccount(ledger) {
+      console.log(`get:Ledger->ledgersOverlappingByCategoryFromAccount(accountID:${ledger.accountID})`);
+      return await Ledger.findAll({ 
+        where: { 
+          accountID: ledger.accountID,
+          categoryID: ledger.categoryID,
+          isBudget: false,
+          [Op.or]: [
+            { ledgerFrom: { [Op.between]: [ledger.ledgerFrom.valueOf(), ledger.ledgerTo.valueOf()] } }, // ledgerFrom within dates
+            { ledgerTo: { [Op.between]: [ledger.ledgerFrom.valueOf(), ledger.ledgerTo.valueOf()] } },   // ledgerTo within dates
+            { ledgerFrom: { [Op.lte]: ledger.ledgerTo.valueOf() }, ledgerTo: { [Op.gte]: ledger.ledgerFrom.valueOf() } }, // completely overlaps from/to
+          ],
+        },
+        order: [
+          ['ledgerFrom', 'DESC'],
+          ['ledgerTo', 'DESC'],
+        ],
+      });
+    },
   },
 
   Member: {
@@ -266,6 +286,18 @@ const resolvers = {
         where: { 
           memberID: user.memberID,
           categoryName,
+        },
+      });
+      // TODO: if AccountShare is implemented this will need to be modified to grab categories from other users' accounts
+    },
+
+    async ledger(_, { ledgerID }, context) {
+      console.log(`query:ledger(ledgerID:${ledgerID})`);
+      const user = await context.getUser();
+      return await Ledger.findOne({
+        where: { 
+          memberID: user.memberID,
+          ledgerID,
         },
       });
       // TODO: if AccountShare is implemented this will need to be modified to grab categories from other users' accounts
