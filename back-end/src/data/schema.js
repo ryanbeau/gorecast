@@ -120,10 +120,16 @@ type Ledger {
     account:     Account!
     member:      Member!
     category:    Category!
+
+    ledgersOverlappingByCategoryFromAccount: [Ledger!]
 }
 
 type Query {
     me: Member
+
+    ledger(
+        ledgerID: Int!
+    ): Ledger
 
     categories: [Category!]
 

@@ -144,6 +144,40 @@ const categoriesGQL = gql`
     }
   }`
 
+const budgetGQL = gql`
+  query Budget($budgetID: Int!) {
+    ledger(ledgerID: $budgetID) {
+      ledgerID
+      accountID
+      categoryID
+      amount
+      isBudget
+      description
+      ledgerFrom
+      ledgerTo
+      account {
+        accountID
+        accountName
+        startBalance
+      }
+      ledgersOverlappingByCategoryFromAccount {
+        ledgerID
+        accountID
+        categoryID
+        amount
+        isBudget
+        description
+        ledgerFrom
+        ledgerTo
+        account {
+          accountID
+          accountName
+          startBalance
+        }
+      }
+    }
+  }`
+
 async function queryMe(authorization) {
   try {
     console.log(authorization);
@@ -203,8 +237,24 @@ async function queryCategory(authorization, categoryName, from, to) {
   }
 }
 
+async function queryBudget(authorization, budgetID) {
+  console.log(`queryBudget: ${budgetID}`)
+
+  try {
+    const result = await client.request(budgetGQL, {
+      budgetID,
+    }, { authorization });
+    console.log(result);
+    return result.ledger;
+  } catch (err) {
+    console.log(err);
+    throw new Error(err.message);
+  }
+}
+
 export {
   queryMe,
   queryCategory,
   queryCategories,
+  queryBudget,
 }

@@ -55,6 +55,10 @@ body {
   margin-left: 10px;
 }
 
+.budget-progress-title a {
+  color: lightseagreen;
+}
+
 .overview-account-title {
   margin-bottom: 20px;
 }

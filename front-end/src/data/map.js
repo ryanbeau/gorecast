@@ -31,7 +31,6 @@ const metricMap = {
 }
 
 const buildLedgersData = (account) => {
-  console.log(account);
   const ledgers = [];
   const len = account?.ledgers?.length ?? 0;
   for (let i = 0; i < len; i++) {
@@ -44,12 +43,10 @@ const buildLedgersData = (account) => {
     }
     ledgers.push(ledger);
   }
-  console.log(ledgers);
   return ledgers;
 }
 
 const buildCategoryLedgersData = (category) => {
-  console.log(category);
   const ledgers = [];
   const len = category?.ledgers?.length ?? 0;
   for (let i = 0; i < len; i++) {
@@ -62,7 +59,22 @@ const buildCategoryLedgersData = (category) => {
     }
     ledgers.push(ledger);
   }
-  console.log(ledgers);
+  return ledgers;
+}
+
+const buildBudgetLedgersData = (budget) => {
+  const ledgers = [];
+  const len = budget?.ledgers?.length ?? 0;
+  for (let i = 0; i < len; i++) {
+    const ledger = {
+      from: DateTime.fromMillis(budget.ledgers[i].ledgerFrom).toISODate(),
+      to: DateTime.fromMillis(budget.ledgers[i].ledgerTo).toISODate(),
+      description: budget.ledgers[i].description,
+      account: budget.ledgers[i].account.accountName,
+      amount: budget.ledgers[i].amount,
+    }
+    ledgers.push(ledger);
+  }
   return ledgers;
 }
 
@@ -199,6 +211,7 @@ const buildStackColumnData = (raw) => {
 export {
   buildLedgersData,
   buildCategoryLedgersData,
+  buildBudgetLedgersData,
   buildAreaChartData,
   buildBudgetsData,
   buildPieChartData,

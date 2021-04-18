@@ -1,5 +1,6 @@
 import { ProgressBar } from 'react-bootstrap';
 import { Row, Col, Tooltip, OverlayTrigger } from 'react-bootstrap';
+import { NavLink } from "react-router-dom";
 
 const Budgets = ({ data, width, height }) => {
 
@@ -19,7 +20,9 @@ const Budgets = ({ data, width, height }) => {
             <div key={budget.ledgerID}>
               <div className="d-flex justify-content-between">
                 <div className="budget-progress-title">
-                  {budget.budgetDescription}
+                  <NavLink to={`/budget/${budget.ledgerID}`} exact>
+                    {budget.budgetDescription}
+                  </NavLink>
                 </div>
                 <div className="budget-progress-percent">
                   {budget.currentAmount}
