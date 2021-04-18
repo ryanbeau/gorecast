@@ -33,21 +33,16 @@ const Budget = (props) => {
       }}>
       <Row>
         <Col>
-          <h3>{budget ? budget.description : "Fetching..."}</h3>
-          {budget && <p>{`${DateTime.fromMillis(budget.ledgerFrom).toISODate()} to ${DateTime.fromMillis(budget.ledgerTo).toISODate()}`}</p>}
+          <h3>{budget ? `${budget.description}: $ ${budget.amount.toFixed(2)}` : "Fetching..."}</h3>
+          {budget && <p>Date from <i>{DateTime.fromMillis(budget.ledgerFrom).toISODate()}</i> to <i>{DateTime.fromMillis(budget.ledgerTo).toISODate()}</i></p>}
         </Col>
       </Row>
       {budget && <>
-        {/* <Row>
-          <Col>
-            <Card border="0" className="shadow-sm w-100">
-              <Area data={buildAreaChartData(category.sumLedgerRangeByMetric)} height={246} title={'Past Month'} />
-            </Card>
-          </Col>
-        </Row> */}
         <Row>
           <Col>
-            <CategoryLedgerTable data={buildBudgetLedgersData({ ledgers: budget.ledgersOverlappingByCategoryFromAccount })} />
+            <CategoryLedgerTable data={buildBudgetLedgersData({ 
+                ledgers: budget.ledgersOverlappingByCategoryFromAccount.filter(l => budget.amount < 0 === l.amount < 0)
+            })} />
           </Col>
         </Row>
       </>}
