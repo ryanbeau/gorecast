@@ -50,19 +50,6 @@ const Account = (props) => {
       margin: "auto",
       padding: "10px"
       }}>
-      <Row className="align-items-center profile-header">
-        <Col md="2" className="mb-3">
-          <img
-            src={picture}
-            alt="Profile"
-            className="rounded-circle img-fluid profile-picture mb-3 mb-md-0"
-          />
-        </Col>
-        <Col md className="text-center text-md-left">
-          <h2>{name}</h2>
-          <p className="lead text-muted">{email}</p>
-        </Col>
-      </Row>
         <h3 className="overview-account-title">{(account?.accountName ?? `Fetching...`) || `Account`}</h3>
         {account && <>
           <Row>
@@ -85,9 +72,14 @@ const Account = (props) => {
                 </Col>
               </Row>
               <Row>
-                <Col className="mb-3">
+                <Col xl={6} className="mb-3">
                   <Card border="0" className="shadow-sm">
                     <StackedColumn data={buildStackColumnData(account.currentYearLedgersByMonth)} height={350} title={`Income and Expenses ${new Date().getFullYear()}`} />
+                  </Card>
+                </Col>
+                <Col xl={6} className="mb-3">
+                  <Card border="0" className="shadow-sm">
+                    <Area data={buildAreaChartData(account.pastYearLedgersByWeek)} height={350} title={`Income and Expenses Past Year`} />
                   </Card>
                 </Col>
               </Row>

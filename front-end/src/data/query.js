@@ -4,7 +4,7 @@ var { DateTime } = require('luxon');
 const client = new GraphQLClient(`${process.env.REACT_APP_SERVER_URL}/api/graphql`)
 
 const meGQL = gql`
-  query Me($oneMonthFrom: Date!, $oneMonthTo: Date!, $currentYearFrom: Date!, $currentYearTo: Date!) {
+  query Me($oneMonthFrom: Date!, $oneMonthTo: Date!, $currentYearFrom: Date!, $currentYearTo: Date!, $nowMinusYear: Date!, $now: Date!) {
     me {
       memberID
       email
@@ -38,6 +38,14 @@ const meGQL = gql`
             expenses
         }
         currentYearLedgersByMonth: sumLedgerRangeByMetric(from: $currentYearFrom, to: $currentYearTo, type:[INCOME, EXPENSE], metric: MONTHLY) {
+            from
+            to
+            metric
+            count
+            incomes
+            expenses
+        }
+        pastYearLedgersByWeek: sumLedgerRangeByMetric(from: $nowMinusYear, to: $now, type:[INCOME, EXPENSE], metric: WEEKLY) {
             from
             to
             metric
@@ -148,11 +156,15 @@ async function queryMe(authorization) {
     const currentYearFrom = now.startOf('year');
     const currentYearTo = now.endOf('year');
 
+    const nowMinusYear = now.minus({ years: 1 }).startOf('day');
+
     return (await client.request(meGQL, { 
       oneMonthFrom: oneMonthFrom.valueOf(),
       oneMonthTo: oneMonthTo.valueOf(),
       currentYearFrom: currentYearFrom.valueOf(), 
       currentYearTo: currentYearTo.valueOf(),
+      now: now.endOf('day').valueOf(),
+      nowMinusYear: nowMinusYear.valueOf(),
     }, { authorization })).me;
   } catch (err) {
     console.log(err);
