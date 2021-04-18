@@ -9,7 +9,7 @@ const schema = yup.object({
   name: yup.string().required(reqdFieldMsg),
 });
 
-const CategoryInput = ({ memberID, token }) => {
+const CategoryInput = ({ memberID, token, onUpdate }) => {
   const [show, setShow] = useState(false);
   const showModal = () => {
     setShow(true);
@@ -27,7 +27,8 @@ const CategoryInput = ({ memberID, token }) => {
         console.log(err.message);
       });
 
-    showModal();
+    onUpdate();
+    handleClose();
   };
 
   return (

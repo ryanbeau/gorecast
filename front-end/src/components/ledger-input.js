@@ -14,7 +14,7 @@ const schema = yup.object({
   amount: yup.number().required(requiredMessage),
 });
 
-const LedgerInput = ({ me, token, accountID }) => {
+const LedgerInput = ({ me, token, accountID, onUpdate }) => {
   const [show, setShow] = useState(false);
   const showModal = () => {
     setShow(true);
@@ -43,8 +43,8 @@ const LedgerInput = ({ me, token, accountID }) => {
       .catch((err) => {
         console.log(err.message);
       });
-
-    showModal();
+    handleClose();
+    onUpdate();
   };
   const [range, setRange] = useState([
     {

@@ -23,7 +23,7 @@ const Account = (props) => {
   const { name, picture, email } = user;
   const account = me.accounts.find(account => account.accountName.toUpperCase() === props.match.params.account.toUpperCase());
 
-  useEffect(() => {
+  const handleUpdate = () => {
     getAccessTokenSilently()
       .then((token) => {
         queryMe(`Bearer ${token}`)
@@ -37,6 +37,10 @@ const Account = (props) => {
             // TODO: do something with this
           });
       });
+  }
+
+  useEffect(() => {
+    handleUpdate();
   }, [user, getAccessTokenSilently])
 
   return (
@@ -97,8 +101,8 @@ const Account = (props) => {
           <Row className="row justify-content-end">
             <Col md={{ span: 3, offset: 3 }}>
                 <div className="item-inputs">
-                  <CategoryInput memberID={me.memberID} token={userJWT} />
-                  <LedgerInput me={me} token={userJWT} accountID={account.accountID} />
+                  <CategoryInput memberID={me.memberID} token={userJWT} onUpdate={handleUpdate} />
+                  <LedgerInput me={me} token={userJWT} accountID={account.accountID} onUpdate={handleUpdate} />
                 </div>
             </Col>
           </Row>
