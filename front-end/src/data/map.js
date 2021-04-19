@@ -87,14 +87,10 @@ const buildBudgetsData = (raw) => {
         budgetDescription: raw[i].budget.description,
         categoryID: raw[i].category.categoryID,
         categoryName: raw[i].category.categoryName,
-        budgetAmount: Math.abs(raw[i].budget.amount),
+        budgetAmount: raw[i].budget.amount,
       }
-      if (raw[i].type === "EXPENSE") {
-        budget.currentAmount = (Math.abs(raw[i].expense || 0) - (raw[i].income || 0)).toFixed(2);
-      } else {
-        budget.currentAmount = ((raw[i].income || 0) + (raw[i].expense || 0)).toFixed(2);
-      }
-      if (budget.currentAmount > 0) {
+      budget.currentAmount = ((raw[i].income || 0) + (raw[i].expense || 0)).toFixed(2);
+      if (budget.currentAmount != 0) {
         budgets.push(budget);
       }
     }

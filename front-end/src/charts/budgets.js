@@ -30,7 +30,7 @@ const Budgets = ({ data, width, height }) => {
               </div>
               <OverlayTrigger
                 placement="bottom"
-                overlay={<Tooltip>{percent.toFixed(0)}% of ${Math.abs(budget.budgetAmount).toFixed(2)}</Tooltip>}>
+                overlay={<Tooltip>{percent.toFixed(0)}% of ${budget.budgetAmount.toFixed(2)}</Tooltip>}>
                 <ProgressBar>
                   <ProgressBar variant="success" now={percent <= 100 ? percent : 100} />
                   {percent > 100 &&
